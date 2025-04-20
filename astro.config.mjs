@@ -9,7 +9,7 @@ export default defineConfig({
 		plugins: [tailwindcss()],
 	},
 
-	site: "https://theophilusnenhanga.github.io",
+	site: "https://crux-docs.netlify.app",
 	base: "/",
 	output: "static",
 	adapter: netlify(),

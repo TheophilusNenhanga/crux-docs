@@ -1,0 +1,240 @@
+---
+import CodeBlock from "../../components/CodeBlock.astro";
+import Layout from "../../layouts/Layout.astro";
+import FunctionSignature from "../../components/FunctionSignature.astro";
+import ParameterList from "../../components/ParameterList.astro";
+---
+
+<Layout title="Standard Library: Table Methods">
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300">
+			Table Methods
+		</h1>
+		<p class="mb-6">
+			Tables (also known as dictionaries, hash maps, or associative
+			arrays) store key-value pairs. The following methods allow you to
+			retrieve collections of keys, values, or key-value pairs from a
+			table instance.
+		</p>
+		<p class="mb-6">
+			These methods operate on an existing <code class="font-mono"
+				>Table</code
+			> object. They return a <code class="font-mono">Result</code> containing
+			an <code class="font-mono">Array</code> on success, or an <code
+				class="font-mono">Error</code
+			> if memory allocation fails.
+		</p>
+		<p class="mb-6 font-semibold">
+			Important Note: The order of elements (keys, values, or pairs) in
+			the arrays returned by these methods is generally not guaranteed and
+			may not correspond to the insertion order.
+		</p>
+
+		<h3 class="text-lg font-semibold mb-2">Example Table</h3>
+		<p class="mb-3">The examples below will use the following table:</p>
+		<CodeBlock
+			id="table-methods-example-setup"
+			code={`
+let my_table = {
+    "name": "Example",
+    "count": 10,
+    true: "yes"
+};
+// Note: Table literal syntax {} is assumed. Adjust if different.
+            `}
+		/>
+
+		<hr class="border-gray-300 my-8" />
+
+		<section class="mb-8">
+			<a id="table-keys" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">Table.keys</h2>
+			<p class="mb-3">
+				Returns an array containing all the keys present in the table.
+			</p>
+			<FunctionSignature
+				signature={`Table.keys(self) -> Result<Array<Value>>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Table"
+					desc="The table instance."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">
+					{
+						`Ok(Array<Value>)</Value>: An array containing all the keys
+					from the table. The type of elements depends on the key
+					types used in the table.`
+					}
+				</code>
+				<p class="mb-3">
+					<code class="font-mono">Err(Error)</code>: If memory
+					allocation for the keys array fails (MEMORY error).
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<CodeBlock
+					id="table-keys-example"
+					code={`
+let my_table = {"name": "Example", "count": 10, true: "yes"};
+
+match my_table.keys() {
+    Ok(key_list) => {
+        println("Table Keys:");
+        for let key in key_list {
+            println("- " + key);
+        }
+        // Example Output (order not guaranteed):
+        // Table Keys:
+        // - name
+        // - true
+        // - count
+    }
+    Err(e) => {
+        println("Error getting keys: " + e.message + " (Type: " + e.type + ")");
+    }
+}
+`}
+				/>
+			</p>
+
+			<hr class="border-gray-300 my-8" />
+
+			<section class="mb-8">
+				<a id="table-values" class="block relative -top-16 invisible"
+				></a>
+				<h2 class="text-2xl font-bold mb-3">Table.values</h2>
+				<p class="mb-3">
+					Returns an array containing all the values present in the
+					table.
+				</p>
+				<p class="mb-3">
+					The order of values generally corresponds to the order of
+					keys returned by
+					<code class="font-mono">.keys()</code> if called on the exact
+					same table state, but like keys, the absolute order is not guaranteed.
+				</p>
+				<FunctionSignature
+					signature={`Table.values(self) -> Result<Array<Value>>`}
+				/>
+				<h3 class="text-lg font-semibold mb-2">Params</h3>
+				<ul class="list-disc ml-6 mb-3">
+					<ParameterList
+						name="self"
+						type="Table"
+						desc="The table instance."
+					/>
+				</ul>
+				<h3 class="text-lg font-semibold mb-2">Returns</h3>
+				<p class="mb-1">
+					<code class="font-mono">
+						{
+							`Ok(Array<Value>)</Value>: An array containing all the
+							values from the table.`
+						}
+					</code>
+					<p class="mb-3">
+						<code class="font-mono">Err(Error)</code>: If memory
+						allocation for the values array fails (MEMORY error).
+					</p>
+					<h3 class="text-lg font-semibold mb-2">Example</h3>
+					<CodeBlock
+						id="table-values-example"
+						code={`
+let my_table = {"name": "Example", "count": 10, true: "yes"};
+
+match my_table.values() {
+    Ok(value_list) => {
+        println("Table Values:");
+        for let value in value_list {
+            println("- " + value);
+        }
+        // Example Output (order corresponds to keys example):
+        // Table Values:
+        // - Example
+        // - yes
+        // - 10
+    }
+    Err(e) => {
+        println("Error getting values: " + e.message + " (Type: " + e.type + ")");
+    }
+}
+`}
+					/>
+				</p>
+
+				<hr class="border-gray-300 my-8" />
+
+				<section class="mb-8">
+					<a id="table-pairs" class="block relative -top-16 invisible"
+					></a>
+					<h2 class="text-2xl font-bold mb-3">Table.pairs</h2>
+					<p class="mb-3">
+						Returns an array where each element is a two-element
+						array representing a key-value pair from the table. Each
+						inner array is structured as
+						<code class="font-mono">[key, value]</code>.
+					</p>
+					<FunctionSignature
+						signature={`Table.pairs(self) -> Result<Array<Array<Value>>>`}
+					/>
+					<h3 class="text-lg font-semibold mb-2">Params</h3>
+					<ul class="list-disc ml-6 mb-3">
+						<ParameterList
+							name="self"
+							type="Table"
+							desc="The table instance."
+						/>
+					</ul>
+					<h3 class="text-lg font-semibold mb-2">Returns</h3>
+					<p class="mb-1">
+						<code class="font-mono">
+							{
+								`Ok(Array<Array<Value>>)</Array<Value>: An array
+							containing two-element arrays, each representing a
+							key-value pair.`
+							}
+						</code>
+						<p class="mb-3">
+							<code class="font-mono">Err(Error)</code>: If memory
+							allocation fails for the outer pairs array or any
+							inner pair array (MEMORY error).
+						</p>
+						<h3 class="text-lg font-semibold mb-2">Example</h3>
+						<CodeBlock
+							id="table-pairs-example"
+							code={`
+let my_table = {"name": "Example", "count": 10, true: "yes"};
+
+match my_table.pairs() {
+    Ok(pair_list) => {
+        println("Table Key-Value Pairs:");
+        for let pair in pair_list {
+            if pair.len() == 2 { // Basic check
+               let key = pair[0];
+               let value = pair[1];
+               println("- Key: " + key + ", Value: " + value);
+            }
+        }
+        // Example Output (order corresponds to keys example):
+        // Table Key-Value Pairs:
+        // - Key: name, Value: Example
+        // - Key: true, Value: yes
+        // - Key: count, Value: 10
+    }
+    Err(e) => {
+        println("Error getting pairs: " + e.message + " (Type: " + e.type + ")");
+    }
+}
+`}
+						/>
+					</p>
+				</section>
+			</section>
+		</section>
+	</div></Layout
+>

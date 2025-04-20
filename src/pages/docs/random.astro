@@ -1,0 +1,471 @@
+---
+import CodeBlock from "../../components/CodeBlock.astro";
+import Layout from "../../layouts/Layout.astro";
+import FunctionSignature from "../../components/FunctionSignature.astro";
+import ParameterList from "../../components/ParameterList.astro";
+---
+
+<Layout title="Standard Library: Random Module">
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300">
+			Random Module
+		</h1>
+		<p class="mb-6">
+			The Random module provides tools for generating pseudo-random
+			numbers and making random choices. It uses a Linear Congruential
+			Generator (LCG) algorithm.
+		</p>
+		<p class="mb-6">
+			Usage typically involves creating a <code class="font-mono"
+				>Random</code
+			> generator object first, and then calling methods on that object to
+			get random values. The generator maintains an internal state (seed) which
+			is updated with each call.
+		</p>
+		<p class="mb-6">
+			To use functions and the generator type from this module:
+		</p>
+		<CodeBlock
+			id="random-import-example"
+			code={`
+// Import the main function to create a generator
+use Random from "crux:random";
+
+// Or import specific methods if your language supports importing methods directly
+// (Syntax might vary based on your language design)
+// use Random.int, Random.choice from "crux:random";
+
+// Create a generator instance
+let rng = Random();
+`}
+		/>
+
+		<section class="mb-8">
+			<a id="random-init" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">Creating a Random Generator</h2>
+			<p class="mb-3">
+				Use the main <code class="font-mono">Random()</code> function (imported
+				from the module) to create a new random number generator instance.
+				Each instance maintains its own internal state.
+			</p>
+			<FunctionSignature signature={`Random() -> Random`} />
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-3">
+				A new <code class="font-mono">Random</code> object instance, initialized
+				with a default seed.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="random-init-example"
+				code={`
+use Random from "crux:random";
+
+// Create two independent generators
+let generator1 = Random();
+let generator2 = Random();
+
+// They will likely produce different sequences unless seeded identically
+println(generator1.next());
+println(generator2.next());
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<section class="mb-8">
+			<a id="random-seed" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">Random.seed</h2>
+			<p class="mb-3">
+				Sets the internal seed of the random number generator. Seeding a
+				generator with the same value will cause it to produce the same
+				sequence of pseudo-random numbers.
+			</p>
+			<FunctionSignature
+				signature={`Random.seed(self, seed_value: int) -> Result<nil>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Random"
+					desc="The random generator instance."
+				/>
+				<ParameterList
+					name="seed_value"
+					type="int"
+					desc="The integer value to use as the seed."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(nil)</code>: Indicates successful
+				seeding.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">seed_value</code
+				> is not an <code class="font-mono">int</code> (RUNTIME error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="random-seed-example"
+				code={`
+use Random from "crux:random";
+let rng = Random();
+
+// Seed the generator
+match rng.seed(12345) {
+    Ok(_) => println("Generator seeded.");
+    Err(e) => println("Error seeding: " + e.message);
+}
+
+// Generate a number
+let first_num = rng.next();
+println(first_num);
+
+// Re-seed with the same value
+rng.seed(12345);
+
+// Generate again - should be the same number
+let second_num = rng.next();
+println(second_num); // Should print the same value as first_num
+
+match rng.seed("not a number") {
+     Ok(_) => {}
+     Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: Seed must be a number. (Type: RUNTIME)
+}
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<section class="mb-8">
+			<a id="random-next" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">Random.next</h2>
+			<p class="mb-3">
+				Generates the next pseudo-random floating-point number in the
+				range [0.0, 1.0) (inclusive of 0.0, exclusive of 1.0) based on
+				the generator's current internal state. This method updates the
+				internal state.
+			</p>
+			<p class="mb-3 italic">
+				Note: This method returns a value directly, not a Result.
+			</p>
+			<FunctionSignature signature={`Random.next(self) -> float`} />
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Random"
+					desc="The random generator instance."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-3">
+				A <code class="font-mono">float</code> value between 0.0 (inclusive)
+				and 1.0 (exclusive).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="random-next-example"
+				code={`
+use Random from "crux:random";
+let rng = Random();
+
+let r1 = rng.next();
+let r2 = rng.next();
+
+println(r1); // e.g., 0.7362...
+println(r2); // e.g., 0.1945... (different from r1)
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<section class="mb-8">
+			<a id="random-int" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">Random.int</h2>
+			<p class="mb-3">
+				Returns a random integer within a specified range [min, max],
+				inclusive of both endpoints.
+			</p>
+			<FunctionSignature
+				signature={`Random.int(self, min: int, max: int) -> Result<int>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Random"
+					desc="The random generator instance."
+				/>
+				<ParameterList
+					name="min"
+					type="int"
+					desc="The minimum possible integer value (inclusive)."
+				/>
+				<ParameterList
+					name="max"
+					type="int"
+					desc="The maximum possible integer value (inclusive)."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(int)</code>: A random integer between <code
+					class="font-mono">min</code
+				> and <code class="font-mono">max</code> (inclusive).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">min</code
+				> or <code class="font-mono">max</code> are not integers (TYPE error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">min</code
+				> is greater than <code class="font-mono">max</code> (RUNTIME error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="random-int-example"
+				code={`
+use Random from "crux:random";
+let rng = Random();
+
+// Get a random number between 1 and 100
+match rng.int(1, 100) {
+    Ok(roll) => println("You rolled: " + roll);
+    Err(e) => println("Error: " + e.message);
+}
+
+// Example of error
+match rng.int(10, 1) {
+    Ok(roll) => println(roll);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: Min must be less than or equal to max (Type: RUNTIME)
+}
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<section class="mb-8">
+			<a id="random-double" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">Random.double</h2>
+			<p class="mb-3">
+				Returns a random floating-point number within a specified range
+				[min, max) (inclusive of min, exclusive of max).
+			</p>
+			<FunctionSignature
+				signature={`Random.double(self, min: int | float, max: int | float) -> Result<float>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Random"
+					desc="The random generator instance."
+				/>
+				<ParameterList
+					name="min"
+					type="int | float"
+					desc="The minimum possible value (inclusive)."
+				/>
+				<ParameterList
+					name="max"
+					type="int | float"
+					desc="The maximum possible value (exclusive)."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(float)</code>: A random float between <code
+					class="font-mono">min</code
+				> (inclusive) and <code class="font-mono">max</code> (exclusive).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">min</code
+				> or <code class="font-mono">max</code> are not numbers (RUNTIME
+				error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">min</code
+				> is greater than <code class="font-mono">max</code> (RUNTIME error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="random-double-example"
+				code={`
+use Random from "crux:random";
+let rng = Random();
+
+// Get a random float between 0.0 and 5.0
+match rng.double(0.0, 5.0) {
+    Ok(val) => println("Random value: " + val); // e.g. 3.1415...
+    Err(e) => println("Error: " + e.message);
+}
+
+// Get a random float between -10 and 10
+match rng.double(-10, 10) {
+    Ok(val) => println("Random value: " + val); // e.g. -2.718...
+    Err(e) => println("Error: " + e.message);
+}
+
+// Example of error
+match rng.double(5.0, 0.0) {
+    Ok(val) => println(val);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: Parameter <min> must be less than or equal to parameter <max>. (Type: RUNTIME)
+}
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+		<section class="mb-8">
+			<a id="random-bool" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">Random.bool</h2>
+			<p class="mb-3">
+				Returns <code class="font-mono">true</code> with a given probability
+				<code class="font-mono">p</code>.
+			</p>
+			<FunctionSignature
+				signature={`Random.bool(self, probability: int | float) -> Result<bool>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Random"
+					desc="The random generator instance."
+				/>
+				<ParameterList
+					name="probability"
+					type="int | float"
+					desc="The probability of returning true (must be between 0.0 and 1.0 inclusive)."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(bool)</code>: Returns <code
+					class="font-mono">true</code
+				> approximately <code class="font-mono">probability * 100%</code
+				> of the time, and <code class="font-mono">false</code> otherwise.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">probability</code
+				> is not a number (RUNTIME error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">probability</code
+				> is less than 0 or greater than 1 (RUNTIME error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="random-bool-example"
+				code={`
+use Random from "crux:random";
+let rng = Random();
+
+let count = 0;
+for let i = 0; i < 1000; i += 1 {
+    match rng.bool(0.75) { // 75% chance of true
+        Ok(result) => {
+            if result {
+                count += 1;
+            }
+        }
+        Err(e) => {
+            println("Error: " + e.message);
+            break;
+        }
+    }
+}
+// Expect count to be around 750
+println("Got true " + count + " times out of 1000.");
+
+// Example of error
+match rng.bool(1.5) {
+    Ok(result) => println(result);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: Probability must be between 0 and 1 (Type: RUNTIME)
+}
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<section class="mb-8">
+			<a id="random-choice" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">Random.choice</h2>
+			<p class="mb-3">
+				Returns a randomly selected element from a non-empty array.
+			</p>
+			<FunctionSignature
+				signature={`Random.choice(self, items: Array) -> Result<Value>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Random"
+					desc="The random generator instance."
+				/>
+				<ParameterList
+					name="items"
+					type="Array"
+					desc="The array to choose an element from."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(Value)</code>: A randomly chosen
+				element from the <code class="font-mono">items</code> array. The
+				type of the value depends on the elements in the array.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">items</code
+				> is not an array (RUNTIME error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the <code
+					class="font-mono">items</code
+				> array is empty (RUNTIME error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="random-choice-example"
+				code={`
+use Random from "crux:random";
+let rng = Random();
+
+let options = ["apple", "banana", "cherry"];
+match rng.choice(options) {
+    Ok(fruit) => println("Selected fruit: " + fruit);
+    Err(e) => println("Error: " + e.message);
+}
+
+let numbers = [1, 10, 100, 1000];
+match rng.choice(numbers) {
+    Ok(num) => println("Selected number: " + num);
+    Err(e) => println("Error: " + e.message);
+}
+
+let empty_array = [];
+match rng.choice(empty_array) {
+    Ok(val) => println(val);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: Array cannot be empty (Type: RUNTIME)
+}
+`}
+			/>
+		</section>
+	</div>
+</Layout>

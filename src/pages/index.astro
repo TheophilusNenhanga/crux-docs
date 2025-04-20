@@ -1,0 +1,197 @@
+---
+import Layout from "../layouts/Layout.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+---
+
+<Layout title="Crux Programming Language">
+	<section class="bg-neutral-900 py-20 md:py-28 text-center">
+		<div class="container mx-auto px-6">
+			<h1 class="text-5xl md:text-6xl font-extrabold mb-4">crux</h1>
+			<p class="text-2xl md:text-3xl text-gray-100 mb-8">
+				Dynamic yet safe.
+			</p>
+			<p class="max-w-2xl mx-auto text-lg text-gray-50 mb-10">
+				Crux is a modern programming language designed to offer the
+				flexibility of dynamic typing with robust safety features,
+				preventing common runtime errors and promoting reliable
+				software.
+			</p>
+			<div class="flex flex-col sm:flex-row justify-center gap-4">
+				<a
+					href="/docs"
+					class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-200"
+				>
+					Get Started
+				</a>
+				<a
+					href="/downloads"
+					class="bg-gray-200 hover:bg-gray-300 text-gray-200 font-bold py-3 px-8 rounded-lg text-lg transition duration-200"
+				>
+					Download
+				</a>
+			</div>
+		</div>
+	</section>
+
+	<section class="py-16 bg-neutral-900">
+		<div class="container mx-auto px-6 text-center">
+			<h2 class="text-3xl font-bold mb-4">Bridging the Gap</h2>
+			<p class="max-w-3xl mx-auto text-lg text-gray-50 mb-6">
+				Tired of choosing between rapid development and runtime safety?
+				Crux aims to provide the best of both worlds. Learn about the
+				design philosophy and the features that make Crux unique.
+			</p>
+			<a
+				href="/why-crux"
+				class="text-blue-600 hover:text-blue-800 font-semibold text-lg transition duration-200"
+			>
+				Why Crux? →
+			</a>
+		</div>
+	</section>
+
+	<section class="py-16 bg-neutral-900">
+		<div class="container mx-auto px-6">
+			<h2 class="text-3xl font-bold text-center mb-12">Features</h2>
+			<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+				<div
+					class="bg-neutral-900 p-6 rounded-lg border border-gray-200 shadow-sm"
+				>
+					<h3 class="text-xl font-semibold mb-2">Dynamic Typing</h3>
+					<p class="text-gray-100">
+						Enjoy the flexibility and speed of development that
+						comes with dynamic types.
+					</p>
+				</div>
+				<div
+					class="bg-neutral-900 p-6 rounded-lg border border-gray-200 shadow-sm"
+				>
+					<h3 class="text-xl font-semibold mb-2">Built-in Safety</h3>
+					<p class="text-gray-100">
+						Leverage features like comprehensive error handling
+						(Result types) and robust standard library checks to
+						catch errors early.
+					</p>
+				</div>
+				<div
+					class="bg-neutral-900 p-6 rounded-lg border border-gray-200 shadow-sm"
+				>
+					<h3 class="text-xl font-semibold mb-2">Clear Syntax</h3>
+					<p class="text-gray-100">
+						Focus on your logic with a clean, readable, and
+						intuitive syntax.
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="py-16 bg-neutral-900">
+		<div class="container mx-auto px-6">
+			<h2 class="text-3xl font-bold text-center mb-8">
+				See Crux in Action
+			</h2>
+			<div class="max-w-3xl mx-auto">
+				<p class="text-center text-gray-50 mb-6">
+					Here's a small taste of what Crux code looks like:
+				</p>
+				<CodeBlock
+					id="landing-example"
+					code={`
+// Define a simple function
+fn greet(name) {
+    give "Hello, " + name + "!";
+}
+
+// Variables and function calls
+let target = "World";
+let message = greet(target);
+
+// Using built-in println
+println(message); // Output: Hello, World!
+
+// Basic loop and array
+let numbers = [];
+for let i = 0; i < 5; i += 1 {
+    numbers.push(i * i);
+}
+println("Squares: " + numbers); // Output: Squares: [0, 1, 4, 9, 16]
+
+// Match expression for results (common pattern)
+match message.first() {
+    Ok(f) => println("First char: " + f); // Output: First char: H
+    Err(e) => println("Error: " + e.message());
+}
+					`}
+				/>
+			</div>
+		</div>
+	</section>
+
+	<section class="py-16 bg-neutral-900 border-t border-gray-200">
+		<div class="container mx-auto px-6">
+			<h2 class="text-3xl font-bold text-center mb-12">Explore Crux</h2>
+			<div
+				class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center"
+			>
+				<div>
+					<h3 class="text-2xl font-semibold mb-3">Documentation</h3>
+					<p class="text-gray-100 mb-4">
+						Dive into the language reference, built-in functions,
+						and standard library modules.
+					</p>
+					<a
+						href="/docs"
+						class="text-blue-600 hover:text-blue-800 font-semibold"
+						>Read the Docs →</a
+					>
+				</div>
+				<div>
+					<h3 class="text-2xl font-semibold mb-3">Downloads</h3>
+					<p class="text-gray-100 mb-4">
+						Get the latest release of the Crux interpreter/compiler
+						for your platform.
+					</p>
+					<a
+						href="/downloads"
+						class="text-blue-600 hover:text-blue-800 font-semibold"
+						>View Downloads →</a
+					>
+				</div>
+				<div>
+					<h3 class="text-2xl font-semibold mb-3">Why Crux?</h3>
+					<p class="text-gray-100 mb-4">
+						Understand the motivation and design decisions behind
+						the Crux language.
+					</p>
+					<a
+						href="/why-crux"
+						class="text-blue-600 hover:text-blue-800 font-semibold"
+						>Learn More →</a
+					>
+				</div>
+				{
+					(
+						<div>
+							<h3 class="text-2xl font-semibold mb-3">
+								Source Code
+							</h3>
+							<p class="text-gray-100 mb-4">
+								Explore the Crux source code, contribute, or
+								report issues on GitHub.
+							</p>
+							<a
+								href="https://github.com/TheophilusNenhanga/crux-lang"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="text-blue-600 hover:text-blue-800 font-semibold"
+							>
+								View on GitHub →
+							</a>
+						</div>
+					)
+				}
+			</div>
+		</div>
+	</section>
+</Layout>

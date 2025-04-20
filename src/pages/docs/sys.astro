@@ -1,0 +1,380 @@
+---
+import CodeBlock from "../../components/CodeBlock.astro";
+import Layout from "../../layouts/Layout.astro";
+import FunctionSignature from "../../components/FunctionSignature.astro";
+import ParameterList from "../../components/ParameterList.astro";
+---
+
+<Layout title="Standard Library: System Module">
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300">
+			System Module (sys)
+		</h1>
+		<p class="mb-6">
+			The System module provides functions to interact with the execution
+			environment, including accessing command-line arguments, environment
+			variables, platform information, and controlling process execution.
+		</p>
+		<p class="mb-6">
+			Functions may return values directly or wrapped in a <code
+				class="font-mono">Result</code
+			> type, requiring error handling (e.g., using <code
+				class="font-mono">match</code
+			>). The <code class="font-mono">exit</code> function is special as it
+			terminates the program and does not return.
+		</p>
+		<p class="mb-6">To use functions from this module:</p>
+		<CodeBlock
+			id="sys-import-example"
+			code={`
+// Example import (adjust path based on your module system)
+use args, platform, arch, pid, getenv, sleep, exit from "crux:sys";
+`}
+		/>
+
+		<hr class="border-gray-300 my-8" />
+
+		<section class="mb-8">
+			<a id="sys-args" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">args</h2>
+			<p class="mb-3">
+				Retrieves the command-line arguments passed to the script.
+			</p>
+			<FunctionSignature signature={`args() -> Result<Array>`} />
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(Array)</code>: An array containing
+				two elements:
+				<ul class="list-disc ml-6">
+					<li>
+						Index 0: (<code class="font-mono">int</code>) The number
+						of arguments (<code class="font-mono">argc</code>).
+					</li>
+					<li>
+						Index 1: (<code class="font-mono"
+							>Array<string></string>) An array of the argument
+							strings (<code class="font-mono">argv</code>). The
+							first argument (<code class="font-mono"
+								>argv[0]</code
+							>) is typically the name of the script file itself.</code
+						>
+					</li>
+				</ul>
+				<p class="mb-3">
+					<code class="font-mono">Err(Error)</code>: If memory
+					allocation fails while copying arguments (MEMORY error).
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<p class="mb-2">
+					If a script <code class="font-mono">main.crux</code> is run as
+					<code class="font-mono">./crux main.crux hello world</code>:
+				</p>
+				<CodeBlock
+					id="sys-args-example"
+					code={`
+use args from "crux:sys";
+
+match args() {
+    Ok(result) => {
+        let argc = result[0];
+        let argv = result[1];
+
+        println("Argument Count (argc): " + argc); // Output: 3 (or depends on interpreter inclusion)
+        println("Arguments (argv):");
+        for let i = 0; i < argc; i += 1 {
+            println(" - argv[" + i + "]: " + argv[i]);
+        }
+        // Example Output:
+        // Arguments (argv):
+        //  - argv[0]: main.crux
+        //  - argv[1]: hello
+        //  - argv[2]: world
+    }
+    Err(e) => {
+        println("Error getting arguments: " + e.message + " (Type: " + e.type + ")");
+    }
+}
+`}
+				/>
+			</p>
+
+			<hr class="border-gray-300 my-8" />
+
+			<section class="mb-8">
+				<a id="sys-platform" class="block relative -top-16 invisible"
+				></a>
+				<h2 class="text-2xl font-bold mb-3">platform</h2>
+				<p class="mb-3">
+					Returns a string identifying the operating system the script
+					is running on.
+				</p>
+				<p class="mb-3 italic">
+					Note: This function returns a value directly, not a Result.
+				</p>
+				<FunctionSignature signature={`platform() -> string`} />
+				<h3 class="text-lg font-semibold mb-2">Returns</h3>
+				<p class="mb-3">
+					A <code class="font-mono">string</code>: Possible values
+					include <code class="font-mono">"windows"</code>, <code
+						class="font-mono">"linux"</code
+					>, <code class="font-mono">"apple"</code> (for macOS/iOS).
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<CodeBlock
+					id="sys-platform-example"
+					code={`
+use platform from "crux:sys";
+let os = platform();
+println("Running on platform: " + os); // e.g., Running on platform: linux
+`}
+				/>
+			</section>
+
+			<hr class="border-gray-300 my-8" />
+
+			{/* --- Function: arch --- */}
+			<section class="mb-8">
+				<a id="sys-arch" class="block relative -top-16 invisible"></a>
+				<h2 class="text-2xl font-bold mb-3">arch</h2>
+				<p class="mb-3">
+					Returns a string identifying the processor architecture the
+					script is running on.
+				</p>
+				<p class="mb-3 italic">
+					Note: This function returns a value directly, not a Result.
+				</p>
+				<FunctionSignature signature={`arch() -> string`} />
+				<h3 class="text-lg font-semibold mb-2">Returns</h3>
+				<p class="mb-3">
+					A <code class="font-mono">string</code>: Common values
+					include <code class="font-mono">"x86_64"</code>, <code
+						class="font-mono">"x86"</code
+					>, <code class="font-mono">"arm64"</code>, <code
+						class="font-mono">"arm"</code
+					>, <code class="font-mono">"ppc64"</code>, <code
+						class="font-mono">"riscv64"</code
+					>, or <code class="font-mono">"unknown"</code> if the architecture
+					is not recognized.
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<CodeBlock
+					id="sys-arch-example"
+					code={`
+use arch from "crux:sys";
+let cpu_arch = arch();
+println("Running on architecture: " + cpu_arch); // e.g., Running on architecture: x86_64
+`}
+				/>
+			</section>
+
+			<hr class="border-gray-300 my-8" />
+
+			<section class="mb-8">
+				<a id="sys-pid" class="block relative -top-16 invisible"></a>
+				<h2 class="text-2xl font-bold mb-3">pid</h2>
+				<p class="mb-3">
+					Returns the process ID (PID) of the current script
+					execution.
+				</p>
+				<p class="mb-3 italic">
+					Note: This function returns a value directly, not a Result.
+				</p>
+				<FunctionSignature signature={`pid() -> int`} />
+				<h3 class="text-lg font-semibold mb-2">Returns</h3>
+				<p class="mb-3">
+					An <code class="font-mono">int</code> representing the process
+					ID.
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<CodeBlock
+					id="sys-pid-example"
+					code={`
+use pid from "crux:sys";
+let process_id = pid();
+println("Current process ID: " + process_id); // e.g., Current process ID: 12345
+`}
+				/>
+			</section>
+
+			<hr class="border-gray-300 my-8" />
+
+			<section class="mb-8">
+				<a id="sys-getenv" class="block relative -top-16 invisible"></a>
+				<h2 class="text-2xl font-bold mb-3">getenv</h2>
+				<p class="mb-3">
+					Retrieves the value of an environment variable.
+				</p>
+				<FunctionSignature
+					signature={`getenv(name: string) -> Result<string>`}
+				/>
+				<h3 class="text-lg font-semibold mb-2">Params</h3>
+				<ul class="list-disc ml-6 mb-3">
+					<ParameterList
+						name="name"
+						type="string"
+						desc="The name of the environment variable to retrieve."
+					/>
+				</ul>
+				<h3 class="text-lg font-semibold mb-2">Returns</h3>
+				<p class="mb-1">
+					<code class="font-mono">Ok(string)</code>: The value of the
+					environment variable if it exists.
+				</p>
+				<p class="mb-1">
+					<code class="font-mono">Err(Error)</code>: If <code
+						class="font-mono">name</code
+					> is not a string (TYPE error).
+				</p>
+				<p class="mb-1">
+					<code class="font-mono">Err(Error)</code>: If the
+					environment variable specified by <code class="font-mono"
+						>name</code
+					> is not found (RUNTIME error).
+				</p>
+				<p class="mb-3">
+					<code class="font-mono">Err(Error)</code>: If memory
+					allocation fails while copying the value (MEMORY error).
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<CodeBlock
+					id="sys-getenv-example"
+					code={`
+use getenv from "crux:sys";
+
+match getenv("PATH") {
+    Ok(path_value) => println("PATH: " + path_value);
+    Err(e) => println("Could not get PATH: " + e.message);
+}
+
+match getenv("NON_EXISTENT_VAR") {
+    Ok(value) => println("Value: " + value);
+    Err(e) => {
+        // Output: Error: Environment variable not found. (Type: RUNTIME)
+        println("Error: " + e.message + " (Type: " + e.type + ")");
+    }
+}
+
+match getenv(123) { // Example of type error
+    Ok(value) => println("Value: " + value);
+    Err(e) => {
+         // Output: Error: Argument <name> must be of type 'string'. (Type: TYPE)
+        println("Error: " + e.message + " (Type: " + e.type + ")");
+    }
+}
+`}
+				/>
+			</section>
+
+			<hr class="border-gray-300 my-8" />
+
+			<section class="mb-8">
+				<a id="sys-sleep" class="block relative -top-16 invisible"></a>
+				<h2 class="text-2xl font-bold mb-3">sleep</h2>
+				<p class="mb-3">
+					Pauses execution for the specified duration in seconds.
+				</p>
+				<p class="mb-3 italic">
+					Note: This function takes an integer number of seconds. For
+					finer-grained (millisecond) pauses, see the <code
+						class="font-mono">sleep_ms</code
+					> function in the <code class="font-mono">time</code> module.
+					The <code class="font-mono">Ok(true)</code> return value on success
+					is somewhat unconventional; often sleep functions return <code
+						class="font-mono">Ok(nil)</code
+					>.
+				</p>
+				<FunctionSignature
+					signature={`sleep(seconds: int) -> Result<bool>`}
+				/>
+				<h3 class="text-lg font-semibold mb-2">Params</h3>
+				<ul class="list-disc ml-6 mb-3">
+					<ParameterList
+						name="seconds"
+						type="int"
+						desc="The number of whole seconds to sleep. Must be non-negative (although not explicitly checked in C code, negative values might behave unpredictably or error)."
+					/>
+				</ul>
+				<h3 class="text-lg font-semibold mb-2">Returns</h3>
+				<p class="mb-1">
+					<code class="font-mono">Ok(true)</code>: Indicates the sleep
+					likely completed successfully.
+				</p>
+				<p class="mb-3">
+					<code class="font-mono">Err(Error)</code>: If <code
+						class="font-mono">seconds</code
+					> is not an integer (TYPE error). (Note: C code incorrectly states
+					MEMORY error).
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<CodeBlock
+					id="sys-sleep-example"
+					code={`
+use sleep, time_s from "crux:time"; // Assuming time_s for demonstration
+use sys_sleep from "crux:sys"; // Renaming to avoid conflict
+
+println("Sleeping for 3 seconds...");
+let start = time_s();
+match sys_sleep(3) {
+    Ok(success) => {
+        let end = time_s();
+        println("Woke up after ~" + (end-start) + " seconds. Success: " + success);
+    }
+    Err(e) => println("Sleep error: " + e.message);
+}
+
+match sys_sleep("abc") { // Type error
+    Ok(_) => {}
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: Argument <seconds> must be of type 'int'. (Type: TYPE)
+}
+`}
+				/>
+			</section>
+
+			<hr class="border-gray-300 my-8" />
+
+			<section class="mb-8">
+				<a id="sys-exit" class="block relative -top-16 invisible"></a>
+				<h2 class="text-2xl font-bold mb-3">exit</h2>
+				<p class="mb-3">
+					Terminates the execution of the script immediately. Any code
+					following the <code class="font-mono">exit()</code> call will
+					not be executed.
+				</p>
+				<FunctionSignature signature={`exit(code: int) -> !`} />
+				<p class="my-3">
+					The return type <code class="font-mono">!</code> signifies that
+					this function never returns control flow back to the caller.
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Params</h3>
+				<ul class="list-disc ml-6 mb-3">
+					<ParameterList
+						name="code"
+						type="int"
+						desc="The exit code to return to the operating system. Typically, 0 indicates success, and non-zero values indicate errors. If the argument is not an integer, the process exits with code 1."
+					/>
+				</ul>
+				<h3 class="text-lg font-semibold mb-2">Returns</h3>
+				<p class="mb-3">This function does not return.</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<CodeBlock
+					id="sys-exit-example"
+					code={`
+use exit from "crux:sys";
+
+println("This line will print.");
+
+if some_error_condition {
+    println("Exiting due to error...");
+    exit(1); // Terminate with error code 1
+} else {
+    println("Exiting successfully...");
+    exit(0); // Terminate with success code 0
+}
+
+println("This line will NEVER print.");
+`}
+				/>
+			</section>
+		</section>
+	</div>
+</Layout>

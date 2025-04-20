@@ -1,0 +1,14 @@
+---
+interface Props {
+	name: string;
+	type: string;
+	desc: string;
+}
+
+const { name, type, desc } = Astro.props;
+---
+
+<li>
+	<code class="font-bold">{name}</code> (
+	<code class="italic">{type}</code>): {desc}
+</li>

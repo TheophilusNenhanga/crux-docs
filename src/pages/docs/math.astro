@@ -1,0 +1,581 @@
+---
+import CodeBlock from "../../components/CodeBlock.astro";
+import Layout from "../../layouts/Layout.astro";
+import FunctionSignature from "../../components/FunctionSignature.astro";
+import ParameterList from "../../components/ParameterList.astro";
+---
+
+<Layout title="Standard Library: Math Module">
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300">
+			Math Module
+		</h1>
+		<p class="mb-6">
+			The Math module provides standard mathematical functions and
+			constants.
+		</p>
+		<p class="mb-6">
+			Functions in this module typically operate on numeric types (<code
+				class="font-mono">int</code
+			> or <code class="font-mono">float</code>). Unless otherwise
+			specified, functions return a <code class="font-mono">Result</code> type.
+			You should use a <code class="font-mono">match</code> statement or similar
+			mechanism to unpack the <code class="font-mono">Ok</code> value or handle
+			the <code class="font-mono">Err</code>.
+		</p>
+		<p class="mb-6">
+			To use functions from this module, you might import them like this
+			(adjust path based on your module system):
+		</p>
+		<CodeBlock
+			id="math-import-example"
+			code={`use pow, sqrt, PI from "crux:math"; // Example import`}
+		/>
+
+		<section class="mb-8">
+			<a id="math-pow" class="block relative -top-16 invisible"></a>
+
+			<h2 class="text-2xl font-bold mb-3">pow</h2>
+			<p class="mb-3">
+				Calculates the power of a base number raised to an exponent.
+			</p>
+			<FunctionSignature
+				signature="pow(base: int | float, exponent: int | float) -> Result<float>"
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="base"
+					type="int | float"
+					desc="The base value."
+				/>
+				<ParameterList
+					name="exponent"
+					type="int | float"
+					desc="The exponent value."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(float)</code>: The result of <code
+					class="font-mono">base</code
+				> raised to the power of <code class="font-mono">exponent</code
+				>.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If either argument is
+				not an <code class="font-mono">int</code> or <code
+					class="font-mono">float</code
+				> (TYPE error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="math-pow-example"
+				code={`
+use pow from "crux:math";
+
+match pow(2, 8) {
+    Ok(result) => println("2^8 is " + result); // Output: 2^8 is 256.0
+    Err(e) => println("Error: " + e.message);
+}
+
+match pow(10, -2.5) {
+    Ok(result) => println("10^-2.5 is " + result); // Output: 10^-2.5 is 0.003162277...
+    Err(e) => println("Error: " + e.message);
+}
+
+match pow("hello", 2) {
+    Ok(result) => println(result);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Output: Error: Both arguments must be of type 'int' | 'float'. (Type: TYPE)
+}
+        `}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<section class="mb-8">
+			<a id="math-sqrt" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">sqrt</h2>
+			<p class="mb-3">
+				Calculates the square root of a non-negative number.
+			</p>
+			<FunctionSignature
+				signature={`sqrt(number: int | float) -> Result<float>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="number"
+					type="int | float"
+					desc="The number to calculate the square root of."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(float)</code>: The square root of the <code
+					class="font-mono">number</code
+				>.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If the argument is
+				not an <code class="font-mono">int</code> or <code
+					class="font-mono">float</code
+				> (TYPE error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the argument is
+				negative (VALUE error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="math-sqrt-example"
+				code={`
+use sqrt from "crux:math";
+
+match sqrt(16) {
+    Ok(result) => println("sqrt(16) is " + result); // Output: sqrt(16) is 4.0
+    Err(e) => println("Error: " + e.message);
+}
+
+match sqrt(-4) {
+    Ok(result) => println(result);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Output: Error: Cannot calculate square root of a negative number. (Type: VALUE)
+}
+        `}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<section class="mb-8">
+			<a id="math-abs" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">abs</h2>
+			<p class="mb-3">Calculates the absolute value of a number.</p>
+			<FunctionSignature
+				signature={`abs(number: int | float) -> Result<int | float>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="number"
+					type="int | float"
+					desc="The number to get the absolute value of."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(int)</code>: The absolute value if
+				the input was an <code class="font-mono">int</code>.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Ok(float)</code>: The absolute value if
+				the input was a <code class="font-mono">float</code>.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the argument is
+				not an <code class="font-mono">int</code> or <code
+					class="font-mono">float</code
+				> (TYPE error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="math-abs-example"
+				code={`
+use abs from "crux:math";
+
+match abs(-5) {
+    Ok(result) => println("abs(-5) is " + result); // Output: abs(-5) is 5
+    Err(e) => println("Error: " + e.message);
+}
+
+match abs(-3.14) {
+    Ok(result) => println("abs(-3.14) is " + result); // Output: abs(-3.14) is 3.14
+    Err(e) => println("Error: " + e.message);
+}
+        `}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Trigonometric Functions</h2>
+		<p class="mb-6">
+			These functions operate on angles specified in radians.
+		</p>
+
+		<section class="mb-8">
+			<a id="math-sin" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">sin</h3>
+			<p class="mb-3">Calculates the sine of an angle (in radians).</p>
+			<FunctionSignature
+				signature={`sin(angle: int | float) -> Result<float>`}
+			/>
+			<ParameterList
+				name="angle"
+				type="int | float"
+				desc="The angle in radians."
+			/>
+			<p class="mt-2">
+				<span class="font-semibold">Returns:</span>
+				<code class="font-mono">Ok(float)</code> on success, <code
+					class="font-mono">Err(Error)</code
+				> if the argument is not numeric (TYPE error).
+			</p>
+			<CodeBlock
+				id="math-sin-example"
+				code={`use sin, PI from "crux:math"; println(sin(PI / 2)); // Approx 1.0`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="math-cos" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">cos</h3>
+			<p class="mb-3">Calculates the cosine of an angle (in radians).</p>
+			<FunctionSignature
+				signature={`cos(angle: int | float) -> Result<float>`}
+			/>
+			<ParameterList
+				name="angle"
+				type="int | float"
+				desc="The angle in radians."
+			/>
+			<p class="mt-2">
+				<span class="font-semibold">Returns:</span>
+				<code class="font-mono">Ok(float)</code> on success, <code
+					class="font-mono">Err(Error)</code
+				> if the argument is not numeric (TYPE error).
+			</p>
+			<CodeBlock
+				id="math-cos-example"
+				code={`use cos, PI from "crux:math"; println(cos(PI)); // Approx -1.0`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="math-tan" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">tan</h3>
+			<p class="mb-3">Calculates the tangent of an angle (in radians).</p>
+			<FunctionSignature
+				signature={`tan(angle: int | float) -> Result<float>`}
+			/>
+			<ParameterList
+				name="angle"
+				type="int | float"
+				desc="The angle in radians."
+			/>
+			<p class="mt-2">
+				<span class="font-semibold">Returns:</span>
+				<code class="font-mono">Ok(float)</code> on success, <code
+					class="font-mono">Err(Error)</code
+				> if the argument is not numeric (TYPE error).
+			</p>
+			<CodeBlock
+				id="math-tan-example"
+				code={`use tan from "crux:math"; println(tan(0)); // Approx 0.0`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="math-asin" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">asin</h3>
+			<p class="mb-3">
+				Calculates the arc sine (inverse sine) of a number. The result
+				is in radians, in the range [-π/2, π/2].
+			</p>
+			<FunctionSignature
+				signature={`asin(value: int | float) -> Result<float>`}
+			/>
+			<ParameterList
+				name="value"
+				type="int | float"
+				desc="The value whose arc sine is computed, must be between -1 and 1."
+			/>
+			<p class="mt-2">
+				<span class="font-semibold">Returns:</span>
+				<code class="font-mono">Ok(float)</code> on success. <code
+					class="font-mono">Err(Error)</code
+				> if the argument is not numeric (TYPE error) or if the value is
+				outside the [-1, 1] range (VALUE error).
+			</p>
+			<CodeBlock
+				id="math-asin-example"
+				code={`use asin from "crux:math"; println(asin(1)); // Approx 1.57 (PI / 2)`}
+			/>
+		</section>
+		<section class="mb-8">
+			<a id="math-acos" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">acos</h3>
+			<p class="mb-3">
+				Calculates the arc cosine (inverse cosine) of a number. The
+				result is in radians, in the range [0, π].
+			</p>
+			<FunctionSignature
+				signature={`acos(value: int | float) -> Result<float>`}
+			/>
+			<ParameterList
+				name="value"
+				type="int | float"
+				desc="The value whose arc cosine is computed, must be between -1 and 1."
+			/>
+			<p class="mt-2">
+				<span class="font-semibold">Returns:</span>
+				<code class="font-mono">Ok(float)</code> on success. <code
+					class="font-mono">Err(Error)</code
+				> if the argument is not numeric (TYPE error) or if the value is
+				outside the [-1, 1] range (VALUE error).
+			</p>
+			<CodeBlock
+				id="math-acos-example"
+				code={`use acos from "crux:math"; println(acos(-1)); // Approx 3.14 (PI)`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="math-atan" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">atan</h3>
+			<p class="mb-3">
+				Calculates the arc tangent (inverse tangent) of a number. The
+				result is in radians, in the range [-π/2, π/2].
+			</p>
+			<FunctionSignature
+				signature={`atan(value: int | float) -> Result<float>`}
+			/>
+			<ParameterList
+				name="value"
+				type="int | float"
+				desc="The value whose arc tangent is computed."
+			/>
+			<p class="mt-2">
+				<span class="font-semibold">Returns:</span>
+				<code class="font-mono">Ok(float)</code> on success, <code
+					class="font-mono">Err(Error)</code
+				> if the argument is not numeric (TYPE error).
+			</p>
+			<CodeBlock
+				id="math-atan-example"
+				code={`use atan from "crux:math"; println(atan(1)); // Approx 0.785 (PI / 4)`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">
+			Exponential & Logarithmic Functions
+		</h2>
+
+		<section class="mb-8">
+			<a id="math-exp" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">exp</h3>
+			<p class="mb-3">
+				Calculates the base-e exponential of a number (e<sup>x</sup>).
+			</p>
+			<FunctionSignature
+				signature={`exp(exponent: int | float) -> Result<float>`}
+			/>
+			<ParameterList
+				name="exponent"
+				type="int | float"
+				desc="The exponent value."
+			/>
+			<p class="mt-2">
+				<span class="font-semibold">Returns:</span>
+				<code class="font-mono">Ok(float)</code> on success, <code
+					class="font-mono">Err(Error)</code
+				> if the argument is not numeric (TYPE error).
+			</p>
+			<CodeBlock
+				id="math-exp-example"
+				code={`use exp from "crux:math"; println(exp(1)); // Approx 2.718 (E)`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="math-ln" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">ln</h3>
+			<p class="mb-3">
+				Calculates the natural logarithm (base-e) of a number.
+			</p>
+			<FunctionSignature
+				signature={`ln(number: int | float) -> Result<float>`}
+			/>
+			<ParameterList
+				name="number"
+				type="int | float"
+				desc="The number whose natural logarithm is computed. Must be positive."
+			/>
+			<p class="mt-2">
+				<span class="font-semibold">Returns:</span>
+				<code class="font-mono">Ok(float)</code> on success. <code
+					class="font-mono">Err(Error)</code
+				> if the argument is not numeric (TYPE error) or if the number is
+				not positive (VALUE error).
+			</p>
+			<CodeBlock
+				id="math-ln-example"
+				code={`use ln, E from "crux:math"; println(ln(E)); // Approx 1.0`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="math-log10" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">log10</h3>
+			<p class="mb-3">
+				Calculates the common logarithm (base-10) of a number.
+			</p>
+			<FunctionSignature
+				signature="log10(number: int | float) -> Result<float>"
+			/>
+			<ParameterList
+				name="number"
+				type="int | float"
+				desc="The number whose common logarithm is computed. Must be positive."
+			/>
+			<p class="mt-2">
+				<span class="font-semibold">Returns:</span>
+				<code class="font-mono">Ok(float)</code> on success. <code
+					class="font-mono">Err(Error)</code
+				> if the argument is not numeric (TYPE error) or if the number is
+				not positive (VALUE error).
+			</p>
+			<CodeBlock
+				id="math-log10-example"
+				code={`use log10 from "crux:math"; println(log10(100)); // Approx 2.0`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Rounding Functions</h2>
+
+		<section class="mb-8">
+			<a id="math-ceil" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">ceil</h3>
+			<p class="mb-3">
+				Returns the smallest integer value greater than or equal to a
+				number (ceiling).
+			</p>
+			<FunctionSignature
+				signature={`ceil(number: int | float) -> Result<float>`}
+			/>
+			<ParameterList
+				name="number"
+				type="int | float"
+				desc="The number to round up."
+			/>
+			<p class="mt-2">
+				<span class="font-semibold">Returns:</span>
+				<code class="font-mono">Ok(float)</code> containing the ceiling value.
+				<code class="font-mono">Err(Error)</code> if the argument is not
+				numeric (TYPE error).
+			</p>
+			<CodeBlock
+				id="math-ceil-example"
+				code={`use ceil from "crux:math"; println(ceil(4.2)); // Output: 5.0`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="math-floor" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">floor</h3>
+			<p class="mb-3">
+				Returns the largest integer value less than or equal to a number
+				(floor).
+			</p>
+			<FunctionSignature
+				signature="floor(number: int | float) -> Result<float>"
+			/>
+			<ParameterList
+				name="number"
+				type="int | float"
+				desc="The number to round down."
+			/>
+			<p class="mt-2">
+				<span class="font-semibold">Returns:</span>
+				<code class="font-mono">Ok(float)</code> containing the floor value.
+				<code class="font-mono">Err(Error)</code> if the argument is not
+				numeric (TYPE error).
+			</p>
+			<CodeBlock
+				id="math-floor-example"
+				code={`use floor from "crux:math"; println(floor(4.8)); // Output: 4.0`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="math-round" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">round</h3>
+			<p class="mb-3">
+				Returns the value of a number rounded to the nearest integer.
+			</p>
+			<FunctionSignature
+				signature="round(number: int | float) -> Result<float>"
+			/>
+			<ParameterList
+				name="number"
+				type="int | float"
+				desc="The number to round."
+			/>
+			<p class="mt-2">
+				<span class="font-semibold">Returns:</span>
+				<code class="font-mono">Ok(float)</code> containing the rounded value.
+				<code class="font-mono">Err(Error)</code> if the argument is not
+				numeric (TYPE error).
+			</p>
+			<CodeBlock
+				id="math-round-example"
+				code={`
+use round from "crux:math";
+println(round(4.3)); // Output: 4.0
+println(round(4.7)); // Output: 5.0
+println(round(4.5)); // Output: 5.0 (Behaviour for .5 might depend on underlying C implementation)
+        `}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Constants</h2>
+
+		<section class="mb-8">
+			<a id="math-pi" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">PI</h3>
+			<p class="mb-3">
+				The mathematical constant π (Pi), the ratio of a circle's
+				circumference to its diameter.
+			</p>
+			<p class="font-mono bg-gray-100 p-2 rounded text-sm mb-3">
+				PI: float
+			</p>
+			<p class="mb-3">
+				Value: Approximately <code class="font-mono"
+					>3.141592653589793</code
+				>.
+			</p>
+			<CodeBlock
+				id="math-pi-example"
+				code={`use PI from "crux:math"; let circumference = 2 * PI * radius;`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="math-e" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">E</h3>
+			<p class="mb-3">
+				The mathematical constant e, the base of the natural logarithm.
+			</p>
+			<p class="font-mono bg-gray-100 p-2 rounded text-sm mb-3">
+				E: float
+			</p>
+			<p class="mb-3">
+				Value: Approximately <code class="font-mono"
+					>2.718281828459045</code
+				>.
+			</p>
+			<CodeBlock
+				id="math-e-example"
+				code={`use E, ln from "crux:math"; println(ln(E)); // Output: 1.0`}
+			/>
+		</section>
+	</div>
+</Layout>

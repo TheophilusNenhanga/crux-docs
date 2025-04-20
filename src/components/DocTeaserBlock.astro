@@ -1,0 +1,22 @@
+---
+import InlineCode from "./InlineCode.astro";
+
+interface Props {
+	title: string;
+	name: string;
+	description: string;
+	link: string;
+}
+
+const props: Props = Astro.props;
+---
+
+<a
+	href={props.link}
+	class="block p-4 border border-gray-200 hover:border-crux-orange rounded hover:shadow-md transition-shadow"
+>
+	<h3 class="text-xl font-medium mb-1">
+		{props.title} Module <InlineCode>{props.name}</InlineCode>
+	</h3>
+	<p class="text-sm text-gray-400">{props.description}</p>
+</a>

@@ -1,0 +1,653 @@
+---
+import CodeBlock from "../../components/CodeBlock.astro";
+import Layout from "../../layouts/Layout.astro";
+import FunctionSignature from "../../components/FunctionSignature.astro";
+import ParameterList from "../../components/ParameterList.astro";
+---
+
+<Layout title="Core Language: Array Methods">
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300">
+			Array Methods
+		</h1>
+		<p class="mb-6">
+			Arrays are ordered, mutable collections of values. Elements can be
+			accessed by their zero-based integer index. The following methods
+			provide ways to modify, access, search, and manipulate array
+			instances.
+		</p>
+		<p class="mb-6">
+			Methods may modify the array *in-place* (like <code
+				class="font-mono">push</code
+			>, <code class="font-mono">pop</code>, <code class="font-mono"
+				>insert</code
+			>, <code class="font-mono">removeAt</code>, <code class="font-mono"
+				>reverse</code
+			>, <code class="font-mono">_clear</code>) or return a new array
+			(like <code class="font-mono">concat</code>, <code class="font-mono"
+				>slice</code
+			>).
+		</p>
+		<p class="mb-6">
+			Many methods return a <code class="font-mono">Result</code> type (<code
+				class="font-mono">Ok</code
+			> or <code class="font-mono">Err</code>), requiring error handling
+			(e.g., using
+			<code class="font-mono">match</code>). Methods prefixed with an
+			underscore (<code class="font-mono">_</code>) return their result
+			directly without a <code class="font-mono">Result</code> wrapper.
+		</p>
+
+		<h3 class="text-lg font-semibold mb-2">Example Array</h3>
+		<p class="mb-3">
+			Many examples below will start with or modify this array:
+		</p>
+		<CodeBlock
+			id="array-methods-example-setup"
+			code={`let my_array = [10, "hello", true, 3.14];`}
+		/>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Modifying Methods (In-Place)</h2>
+
+		<section class="mb-8">
+			<a id="array-push" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">push</h3>
+			<p class="mb-3">
+				Appends a new value to the end of the array, modifying it
+				in-place.
+			</p>
+			<FunctionSignature
+				signature={`Array.push(self, value: any) -> Result<nil>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Array"
+					desc="The array instance."
+				/>
+				<ParameterList
+					name="value"
+					type="any"
+					desc="The value to add to the end of the array."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(nil)</code>: Indicates the value was
+				successfully added.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				fails when resizing the array (RUNTIME/MEMORY error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="array-push-example"
+				code={`
+let items = [1, 2];
+println("Before push: " + items); // Output: [1, 2]
+
+match items.push(3) {
+    Ok(_) => println("After push: " + items); // Output: [1, 2, 3]
+    Err(e) => println("Error: " + e.message());
+}
+
+match items.push("four") {
+    Ok(_) => println("After push 2: " + items); // Output: [1, 2, 3, "four"]
+    Err(e) => println("Error: " + e.message());
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="array-pop" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">pop</h3>
+			<p class="mb-3">
+				Removes and returns the last element from the array, modifying
+				it in-place.
+			</p>
+			<FunctionSignature signature={`Array.pop(self) -> Result<Value>`} />
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Array"
+					desc="The array instance."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(Value)</code>: The value that was
+				removed from the end of the array.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the array is empty
+				(INDEX_OUT_OF_BOUNDS error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="array-pop-example"
+				code={`
+let items = ["a", "b", "c"];
+println("Before pop: " + items); // Output: ["a", "b", "c"]
+
+match items.pop() {
+    Ok(removed) => {
+        println("Popped value: " + removed); // Output: Popped value: c
+        println("After pop: " + items);      // Output: After pop: ["a", "b"]
+    }
+    Err(e) => println("Error: " + e.message());
+}
+
+items.pop(); // Pop "b"
+items.pop(); // Pop "a"
+
+match items.pop() { // Pop from empty array
+    Ok(removed) => println("Popped value: " + removed);
+    Err(e) => println("Error: " + e.message()); // Output: Error: Cannot remove a value from an empty array.
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="array-insert" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">insert</h3>
+			<p class="mb-3">
+				Inserts a value at the specified index, shifting existing
+				elements to the right. Modifies the array in-place.
+			</p>
+			<FunctionSignature
+				signature={`Array.insert(self, value: any, index: int) -> Result<nil>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Array"
+					desc="The array instance."
+				/>
+				<ParameterList
+					name="value"
+					type="any"
+					desc="The value to insert."
+				/>
+				<ParameterList
+					name="index"
+					type="int"
+					desc="The zero-based index at which to insert the value. Must be between 0 and the current array length (inclusive)."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(nil)</code>: Indicates the value was
+				successfully inserted.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">index</code
+				> is not an integer (TYPE error).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">index</code
+				> is negative or greater than the array's current length (INDEX_OUT_OF_BOUNDS
+				error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				fails when resizing the array (MEMORY error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="array-insert-example"
+				code={`
+let items = [10, 30, 40];
+println("Before insert: " + items); // Output: [10, 30, 40]
+
+match items.insert(20, 1) { // Insert 20 at index 1
+    Ok(_) => println("After insert 1: " + items); // Output: [10, 20, 30, 40]
+    Err(e) => println("Error: " + e.message());
+}
+
+match items.insert(50, 4) { // Insert 50 at the end (index == length)
+    Ok(_) => println("After insert 2: " + items); // Output: [10, 20, 30, 40, 50]
+    Err(e) => println("Error: " + e.message());
+}
+
+match items.insert(0, 6) { // Index out of bounds
+     Ok(_) => println("After insert 3: " + items);
+     Err(e) => println("Error: " + e.message()); // Output: Error: <index> is out of bounds.
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="array-removeAt" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">removeAt</h3>
+			<p class="mb-3">
+				Removes and returns the element at the specified index, shifting
+				subsequent elements to the left. Modifies the array in-place.
+			</p>
+			<FunctionSignature
+				signature={`Array.removeAt(self, index: int) -> Result<Value>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Array"
+					desc="The array instance."
+				/>
+				<ParameterList
+					name="index"
+					type="int"
+					desc="The zero-based index of the element to remove. Must be a valid index within the array bounds."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(Value)</code>: The value that was
+				removed.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">index</code
+				> is not an integer (TYPE error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">index</code
+				> is negative or outside the bounds of the array (INDEX_OUT_OF_BOUNDS
+				error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="array-removeAt-example"
+				code={`
+let items = ["a", "b", "c", "d"];
+println("Before remove: " + items); // Output: ["a", "b", "c", "d"]
+
+match items.removeAt(1) { // Remove element at index 1 ("b")
+    Ok(removed) => {
+        println("Removed: " + removed); // Output: Removed: b
+        println("After remove 1: " + items); // Output: ["a", "c", "d"]
+    }
+    Err(e) => println("Error: " + e.message());
+}
+
+match items.removeAt(5) { // Index out of bounds
+    Ok(removed) => println("Removed: " + removed);
+    Err(e) => println("Error: " + e.message()); // Output: Error: <index> is out of bounds.
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="array-reverse" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">reverse</h3>
+			<p class="mb-3">
+				Reverses the order of elements in the array in-place.
+			</p>
+			<FunctionSignature
+				signature={`Array.reverse(self) -> Result<nil>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Array"
+					desc="The array instance."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(nil)</code>: Indicates the array was
+				successfully reversed.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				fails during the reversal process (MEMORY error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="array-reverse-example"
+				code={`
+let items = [1, "two", 3];
+println("Before reverse: " + items); // Output: [1, "two", 3]
+match items.reverse() {
+    Ok(_) => println("After reverse: " + items); // Output: [3, "two", 1]
+    Err(e) => println("Error: " + e.message());
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="array-clear" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">_clear</h3>
+			<p class="mb-3">
+				Removes all elements from the array, making it empty. Modifies
+				the array in-place.
+			</p>
+			<p class="mb-3 italic">
+				Note: Uses the direct return convention (`_` prefix).
+			</p>
+			<FunctionSignature signature={`Array._clear(self) -> nil`} />
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Array"
+					desc="The array instance."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-3">
+				(<code class="font-mono">nil</code>): Always returns nil.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="array-clear-example"
+				code={`
+let items = [1, 2, 3];
+println("Before clear: " + items); // Output: [1, 2, 3]
+let result = items._clear();
+println("After clear: " + items);   // Output: []
+println("Return value: " + result); // Output: nil
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">
+			Creating New Arrays from Existing Ones
+		</h2>
+
+		<section class="mb-8">
+			<a id="array-concat" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">concat</h3>
+			<p class="mb-3">
+				Creates and returns a new array by concatenating the elements of
+				the target array onto the end of the original array. Does not
+				modify the original arrays.
+			</p>
+			<FunctionSignature
+				signature={`Array.concat(self, target: Array) -> Result<Array>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Array"
+					desc="The first array instance."
+				/>
+				<ParameterList
+					name="target"
+					type="Array"
+					desc="The second array whose elements will be appended."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(Array)</code>: A new array containing
+				all elements from both original arrays.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">target</code
+				> is not an array (TYPE error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the combined size
+				exceeds the maximum allowed array size (INDEX_OUT_OF_BOUNDS
+				error) or memory allocation fails (MEMORY error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="array-concat-example"
+				code={`
+let arr1 = [1, 2];
+let arr2 = ["a", "b"];
+match arr1.concat(arr2) {
+    Ok(combined) => {
+        println("Combined: " + combined); // Output: [1, 2, "a", "b"]
+        println("arr1 (unchanged): " + arr1); // Output: [1, 2]
+        println("arr2 (unchanged): " + arr2); // Output: ["a", "b"]
+    }
+    Err(e) => println("Error: " + e.message());
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="array-slice" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">slice</h3>
+			<p class="mb-3">
+				Creates and returns a new array containing a shallow copy of
+				elements from the original array, starting at <code
+					class="font-mono">start_index</code
+				> up to (but not including) <code class="font-mono"
+					>end_index</code
+				>. Does not modify the original array.
+			</p>
+			<FunctionSignature
+				signature={`Array.slice(self, start_index: int, end_index: int) -> Result<Array>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Array"
+					desc="The array instance."
+				/>
+				<ParameterList
+					name="start_index"
+					type="int"
+					desc="The zero-based starting index (inclusive)."
+				/>
+				<ParameterList
+					name="end_index"
+					type="int"
+					desc="The zero-based ending index (exclusive)."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(Array)</code>: A new array containing
+				the sliced elements. Returns an empty array if <code
+					class="font-mono">start_index</code
+				> equals <code class="font-mono">end_index</code>.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">start_index</code
+				> or <code class="font-mono">end_index</code> are not integers (TYPE
+				error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If indices are
+				negative, <code class="font-mono">start_index</code>
+				<code class="font-mono">end_index</code>, or indices exceed
+				array bounds (INDEX_OUT_OF_BOUNDS error). Memory errors (MEMORY)
+				during new array allocation are also possible.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="array-slice-example"
+				code={`
+let items = [10, 20, 30, 40, 50];
+match items.slice(1, 4) { // Elements from index 1 up to 4
+    Ok(sub_array) => {
+        println("Slice: " + sub_array); // Output: [20, 30, 40]
+        println("Original (unchanged): " + items); // Output: [10, 20, 30, 40, 50]
+    }
+    Err(e) => println("Error: " + e.message());
+}
+
+match items.slice(3, 3) { // Start equals end
+    Ok(sub_array) => println("Empty slice: " + sub_array); // Output: []
+    Err(e) => println("Error: " + e.message());
+}
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Searching & Checking</h2>
+
+		<section class="mb-8">
+			<a id="array-indexOf" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">indexOf</h3>
+			<p class="mb-3">
+				Searches the array for the first occurrence of a given value and
+				returns its index. Uses value equality comparison.
+			</p>
+			<FunctionSignature
+				signature={`Array.indexOf(self, value: any) -> Result<int>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Array"
+					desc="The array instance."
+				/>
+				<ParameterList
+					name="value"
+					type="any"
+					desc="The value to search for."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(int)</code>: The zero-based index of
+				the first occurrence of the value.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the value is not
+				found in the array (VALUE error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="array-indexOf-example"
+				code={`
+let items = ["a", "b", "c", "b", "d"];
+match items.indexOf("b") {
+    Ok(index) => println("Index of 'b': " + index); // Output: Index of 'b': 1 (finds first occurrence)
+    Err(e) => println("Error: " + e.message());
+}
+
+match items.indexOf("z") {
+    Ok(index) => println("Index of 'z': " + index);
+    Err(e) => println("Error: " + e.message()); // Output: Error: Value could not be found in the array.
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="array-contains" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">_contains</h3>
+			<p class="mb-3">
+				Checks if the array contains the given value. Uses value
+				equality comparison.
+			</p>
+			<p class="mb-3 italic">
+				Note: Uses the direct return convention (`_` prefix).
+			</p>
+			<FunctionSignature
+				signature={`Array._contains(self, value: any) -> bool`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Array"
+					desc="The array instance."
+				/>
+				<ParameterList
+					name="value"
+					type="any"
+					desc="The value to search for."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-3">
+				(<code class="font-mono">bool</code>): <code class="font-mono"
+					>true</code
+				> if the value is found, <code class="font-mono">false</code> otherwise.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="array-contains-example"
+				code={`
+let items = [10, "hi", false];
+println("Contains 'hi': " + items._contains("hi"));     // Output: true
+println("Contains 20: " + items._contains(20));         // Output: false
+println("Contains false: " + items._contains(false));   // Output: true
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="array-equals" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">_equals</h3>
+			<p class="mb-3">
+				Checks if this array is equal to another array. Equality
+				requires that the other value is also an array, they have the
+				same length, and all corresponding elements are equal (using
+				value equality comparison).
+			</p>
+			<p class="mb-3 italic">
+				Note: Uses the direct return convention (`_` prefix).
+			</p>
+			<FunctionSignature
+				signature={`Array._equals(self, other: any) -> bool`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Array"
+					desc="The first array instance."
+				/>
+				<ParameterList
+					name="other"
+					type="any"
+					desc="The value to compare against."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-3">
+				(<code class="font-mono">bool</code>): <code class="font-mono"
+					>true</code
+				> if the arrays are equal, <code class="font-mono">false</code> otherwise.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="array-equals-example"
+				code={`
+let arr1 = [1, "a", true];
+let arr2 = [1, "a", true];
+let arr3 = [1, "a", false];
+let arr4 = [1, "a"];
+
+println("arr1 == arr2? " + arr1._equals(arr2)); // Output: true
+println("arr1 == arr3? " + arr1._equals(arr3)); // Output: false (different element)
+println("arr1 == arr4? " + arr1._equals(arr4)); // Output: false (different length)
+println("arr1 == \"abc\"? " + arr1._equals("abc")); // Output: false (different type)
+`}
+			/>
+		</section>
+	</div>
+</Layout>

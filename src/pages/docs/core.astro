@@ -1,0 +1,589 @@
+---
+import CodeBlock from "../../components/CodeBlock.astro";
+import Layout from "../../layouts/Layout.astro";
+import FunctionSignature from "../../components/FunctionSignature.astro";
+import ParameterList from "../../components/ParameterList.astro";
+---
+
+<Layout title="Core Language: Built-in Functions">
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300">
+			Built-in Functions
+		</h1>
+		<p class="mb-6">
+			These functions are part of the core language and are always
+			available without needing to be imported from a module. They provide
+			fundamental operations like type inspection, length calculation,
+			type conversion, and basic input/output.
+		</p>
+		<p class="mb-6">
+			Other functions, such as <code class="font-mono">println()</code>, <code
+				class="font-mono">scanln()</code
+			>, and error handling functions like <code class="font-mono"
+				>ok()</code
+			>, <code class="font-mono">err()</code>,
+			<code class="font-mono">assert()</code>, and <code class="font-mono"
+				>panic()</code
+			>, while documented in their respective module sections (e.g., <code
+				class="font-mono">io</code
+			>, <code class="font-mono">error</code>), are often also made
+			available globally as built-ins for convenience. Check your
+			language's specific global scope for confirmation.
+		</p>
+		<p class="mb-6">
+			Many built-in functions come in two forms:
+			<ul class="list-disc ml-6">
+				<li>
+					A standard version (e.g., <code class="font-mono"
+						>len()</code
+					>) that returns a <code class="font-mono">Result</code> type,
+					allowing for safe error handling using <code
+						class="font-mono">match</code
+					>.
+				</li>
+				<li>
+					An "infallible" version prefixed with an underscore (e.g., <code
+						class="font-mono">_len()</code
+					>) that returns the value directly. If the operation cannot
+					be performed (e.g., getting length of a number, invalid type
+					conversion), it typically returns <code class="font-mono"
+						>nil</code
+					>. Use this version when you are certain the operation will
+					succeed or when <code class="font-mono">nil</code> is an acceptable
+					outcome for failure.
+				</li>
+			</ul>
+		</p>
+
+		<hr class="border-gray-300 my-8" />
+
+		<section class="mb-8">
+			<a id="builtin-len" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">len / _len</h2>
+			<p class="mb-3">
+				Calculates the length or size of a collection (string, array, or
+				table).
+			</p>
+
+			<h4 class="text-lg font-semibold mt-4 mb-2">
+				Result Version: <code class="font-mono">len()</code>
+			</h4>
+			<FunctionSignature
+				signature={`len(collection: string | array | table) -> Result<int>`}
+			/>
+			<p class="mt-1 mb-3">
+				Returns a <code class="font-mono">Result</code> containing the length.
+			</p>
+			<h5 class="font-semibold mb-1">Params</h5>
+			<ul class="list-disc ml-6 mb-2">
+				<ParameterList
+					name="collection"
+					type="string | array | table"
+					desc="The collection whose length is required."
+				/>
+			</ul>
+			<h5 class="font-semibold mb-1">Returns</h5>
+			<p class="mb-1">
+				<code class="font-mono">Ok(int)</code>: The number of characters
+				(for strings), elements (for arrays), or key-value pairs (for
+				tables).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the input is not a
+				string, array, or table (TYPE error).
+			</p>
+
+			<h4 class="text-lg font-semibold mt-4 mb-2">
+				Direct Version: <code class="font-mono">_len()</code>
+			</h4>
+			<FunctionSignature
+				signature={`_len(collection: string | array | table) -> int | nil`}
+			/>
+			<p class="mt-1 mb-3">
+				Returns the length directly, or <code class="font-mono"
+					>nil</code
+				> if the input is not a valid collection type.
+			</p>
+			<h5 class="font-semibold mb-1">Params</h5>
+			<ul class="list-disc ml-6 mb-2">
+				<ParameterList
+					name="collection"
+					type="string | array | table"
+					desc="The collection whose length is required."
+				/>
+			</ul>
+			<h5 class="font-semibold mb-1">Returns</h5>
+			<p class="mb-3">
+				(<code class="font-mono">int</code>): The length/size if the
+				input is a valid collection. <br />
+				(<code class="font-mono">nil</code>): If the input is not a
+				string, array, or table.
+			</p>
+
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="builtin-len-example"
+				code={`
+let my_string = "hello";
+let my_array = [1, 2, 3, 4];
+let my_table = {"a": 1, "b": 2};
+let my_number = 100;
+
+// Using len() (Result version)
+match len(my_string) {
+    Ok(l) => println("String length: " + l); // Output: 5
+    Err(e) => println(e.message());
+}
+match len(my_array) {
+    Ok(l) => println("Array length: " + l); // Output: 4
+    Err(e) => println(e.message());
+}
+match len(my_table) {
+    Ok(l) => println("Table size: " + l); // Output: 2
+    Err(e) => println(e.message());
+}
+match len(my_number) {
+    Ok(l) => println("Number length: " + l);
+    Err(e) => println("Error: " + e.message()); // Output: Error: Expected either a collection type...
+}
+
+// Using _len() (Direct version)
+println("Direct string length: " + _len(my_string)); // Output: 5
+println("Direct array length: " + _len(my_array));   // Output: 4
+println("Direct table size: " + _len(my_table));     // Output: 2
+println("Direct number length: " + _len(my_number)); // Output: nil
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<section class="mb-8">
+			<a id="builtin-type" class="block relative -top-16 invisible"></a>
+			<h2 class="text-2xl font-bold mb-3">_type</h2>
+			<p class="mb-3">
+				Returns a string representation of the value's type. This
+				function is infallible and always returns a string.
+			</p>
+			<p class="mb-3 italic">
+				Note: Only the direct version <code class="font-mono"
+					>_type()</code
+				> exists.
+			</p>
+			<FunctionSignature signature={`_type(value: any) -> string`} />
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="value"
+					type="any"
+					desc="The value whose type is to be determined."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				(<code class="font-mono">string</code>): A string representing
+				the type. Possible values include:
+			</p>
+			<ul class="list-disc ml-6 text-sm font-mono mb-3 columns-2">
+				<li>"int"</li>
+				<li>"float"</li>
+				<li>"boolean"</li>
+				<li>"nil"</li>
+				<li>"string"</li>
+				<li>"array"</li>
+				<li>"table"</li>
+				<li>"function"</li>
+				<li>"method"</li>
+				<li>"class"</li>
+				<li>"instance"</li>
+				<li>"error"</li>
+				<li>"result"</li>
+				<li>"unknown"</li>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="builtin-type-example"
+				code={`
+println("Type of 123: " + _type(123));         // Output: int
+println("Type of 3.14: " + _type(3.14));       // Output: float
+println("Type of true: " + _type(true));       // Output: boolean
+println("Type of nil: " + _type(nil));         // Output: nil
+println("Type of \"abc\": " + _type("abc"));     // Output: string
+println("Type of [1,2]: " + _type([1,2]));     // Output: array
+println("Type of {a:1}: " + _type({"a":1}));   // Output: table
+println("Type of len: " + _type(len));         // Output: function (or method depending on implementation)
+println("Type of error(\"e\"): " + _type(error("e"))); // Output: result (error() returns Ok(Error))
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Type Conversion Functions</h2>
+		<p class="mb-6">
+			These functions attempt to convert a value from one type to another.
+		</p>
+
+		<section class="mb-8">
+			<a id="builtin-int" class="block relative -top-16 invisible"></a>
+			<h2 class="text-xl font-bold mb-3">int / _int</h2>
+			<p class="mb-3">Converts a value to an integer.</p>
+			<h4 class="text-md font-semibold mt-3 mb-2">Conversion Rules:</h4>
+			<ul class="list-disc ml-6 mb-3 text-sm">
+				<li><code class="font-mono">int</code>: Returns itself.</li>
+				<li>
+					<code class="font-mono">float</code>: Truncates the decimal
+					part.
+				</li>
+				<li>
+					<code class="font-mono">string</code>: Parses the string as
+					a number (integer or float part). Returns 0 if parsing
+					fails.
+				</li>
+				<li>
+					<code class="font-mono">boolean</code>: Returns 1 for <code
+						class="font-mono">true</code
+					>, 0 for <code class="font-mono">false</code>.
+				</li>
+				<li><code class="font-mono">nil</code>: Returns 0.</li>
+				<li>Other types: Conversion fails.</li>
+			</ul>
+
+			<h4 class="text-lg font-semibold mt-4 mb-2">
+				Result Version: <code class="font-mono">int()</code>
+			</h4>
+			<FunctionSignature signature={`int(value: any) -> Result<int>`} />
+			<p class="mt-1 mb-3">
+				Returns a <code class="font-mono">Result</code> containing the integer.
+			</p>
+			<h5 class="font-semibold mb-1">Returns</h5>
+			<p class="mb-1">
+				<code class="font-mono">Ok(int)</code>: The converted integer
+				value.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the conversion is
+				not possible (TYPE error).
+			</p>
+
+			<h4 class="text-lg font-semibold mt-4 mb-2">
+				Direct Version: <code class="font-mono">_int()</code>
+			</h4>
+			<FunctionSignature signature={`_int(value: any) -> int | nil`} />
+			<p class="mt-1 mb-3">
+				Returns the integer directly, or <code class="font-mono"
+					>nil</code
+				> on failure.
+			</p>
+			<h5 class="font-semibold mb-1">Returns</h5>
+			<p class="mb-3">
+				(<code class="font-mono">int</code>) or (<code class="font-mono"
+					>nil</code
+				>)
+			</p>
+
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="builtin-int-example"
+				code={`
+// Using int()
+match int(123.7)   { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: 123
+match int("456")   { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: 456
+match int("78.9")  { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: 78
+match int(true)    { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: 1
+match int(nil)     { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: 0
+match int("abc")   { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: 0 (C strtod behavior) -> Check if this should error instead
+match int([1,2])   { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: Cannot convert value to number.
+
+// Using _int()
+println(_int(99.1));    // Output: 99
+println(_int("101"));   // Output: 101
+println(_int(false));   // Output: 0
+println(_int("xyz"));   // Output: 0 -> Check if this should be nil
+println(_int({}));      // Output: nil
+            `}
+			/>
+		</section>
+		<section class="mb-8">
+			<a id="builtin-float" class="block relative -top-16 invisible"></a>
+			<h2 class="text-xl font-bold mb-3">float / _float</h2>
+			<p class="mb-3">Converts a value to a float.</p>
+			<h4 class="text-md font-semibold mt-3 mb-2">Conversion Rules:</h4>
+			<ul class="list-disc ml-6 mb-3 text-sm">
+				<li><code class="font-mono">float</code>: Returns itself.</li>
+				<li>
+					<code class="font-mono">int</code>: Converts to the
+					equivalent float.
+				</li>
+				<li>
+					<code class="font-mono">string</code>: Parses the string as
+					a number. Returns 0.0 if parsing fails.
+				</li>
+				<li>
+					<code class="font-mono">boolean</code>: Returns 1.0 for <code
+						class="font-mono">true</code
+					>, 0.0 for <code class="font-mono">false</code>.
+				</li>
+				<li><code class="font-mono">nil</code>: Returns 0.0.</li>
+				<li>Other types: Conversion fails.</li>
+			</ul>
+
+			<h4 class="text-lg font-semibold mt-4 mb-2">
+				Result Version: <code class="font-mono">float()</code>
+			</h4>
+			<FunctionSignature
+				signature={`float(value: any) -> Result<float>`}
+			/>
+			<p class="mt-1 mb-3">
+				Returns a <code class="font-mono">Result</code> containing the float.
+			</p>
+			<h5 class="font-semibold mb-1">Returns</h5>
+			<p class="mb-1">
+				<code class="font-mono">Ok(float)</code>: The converted float
+				value.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the conversion is
+				not possible (TYPE error).
+			</p>
+
+			<h4 class="text-lg font-semibold mt-4 mb-2">
+				Direct Version: <code class="font-mono">_float()</code>
+			</h4>
+			<FunctionSignature
+				signature={`_float(value: any) -> float | nil`}
+			/>
+			<p class="mt-1 mb-3">
+				Returns the float directly, or <code class="font-mono">nil</code
+				> on failure.
+			</p>
+			<h5 class="font-semibold mb-1">Returns</h5>
+			<p class="mb-3">
+				(<code class="font-mono">float</code>) or (<code
+					class="font-mono">nil</code
+				>)
+			</p>
+
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="builtin-float-example"
+				code={`
+// Using float()
+match float(123)     { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: 123.000000
+match float("45.67") { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: 45.670000
+match float(true)    { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: 1.000000
+match float(nil)     { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: 0.000000
+match float("abc")   { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: 0.000000 -> Check behavior
+match float([1,2])   { Ok(v)=>println(v), Err(e)=>println(e.message()) } // Output: Cannot convert value to number.
+
+// Using _float()
+println(_float(99));      // Output: 99.000000
+println(_float("1.01"));  // Output: 1.010000
+println(_float(false));   // Output: 0.000000
+println(_float("xyz"));   // Output: 0.000000 -> Check behavior
+println(_float({}));      // Output: nil
+            `}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="builtin-string" class="block relative -top-16 invisible"></a>
+			<h2 class="text-xl font-bold mb-3">string / _string</h2>
+			<p class="mb-3">
+				Converts a value to its string representation. This is the same
+				representation used by <code class="font-mono">print()</code>.
+			</p>
+
+			<h4 class="text-lg font-semibold mt-4 mb-2">
+				Result Version: <code class="font-mono">string()</code>
+			</h4>
+			<FunctionSignature
+				signature={`string(value: any) -> Result<string>`}
+			/>
+			<p class="mt-1 mb-3">
+				Returns a <code class="font-mono">Result</code> containing the string.
+			</p>
+			<h5 class="font-semibold mb-1">Returns</h5>
+			<p class="mb-3">
+				<code class="font-mono">Ok(string)</code>: The string
+				representation.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				fails (MEMORY error, though unlikely for most basic types).
+			</p>
+
+			<h4 class="text-lg font-semibold mt-4 mb-2">
+				Direct Version: <code class="font-mono">_string()</code>
+			</h4>
+			<FunctionSignature signature={`_string(value: any) -> string`} />
+			<p class="mt-1 mb-3">Returns the string representation directly.</p>
+			<h5 class="font-semibold mb-1">Returns</h5>
+			<p class="mb-3">(<code class="font-mono">string</code>)</p>
+
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="builtin-string-example"
+				code={`
+println(_string(123));       // Output: 123
+println(_string(4.56));      // Output: 4.560000
+println(_string(true));      // Output: true
+println(_string(nil));       // Output: nil
+println(_string([1, "a"]));  // Output: [1, "a"]
+println(_string({k: "v"})); // Output: {k:"v"}
+
+match string(123) { Ok(s)=>println(s), Err(e)=>println(e.message()) } // Output: 123
+            `}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="builtin-array" class="block relative -top-16 invisible"></a>
+			<h2 class="text-xl font-bold mb-3">array / _array</h2>
+			<p class="mb-3">Converts a value to an array.</p>
+			<h4 class="text-md font-semibold mt-3 mb-2">Conversion Rules:</h4>
+			<ul class="list-disc ml-6 mb-3 text-sm">
+				<li><code class="font-mono">array</code>: Returns itself.</li>
+				<li>
+					<code class="font-mono">string</code>: Returns an array
+					where each element is a single-character string.
+				</li>
+				<li>
+					<code class="font-mono">table</code>: Returns an array
+					containing an alternating sequence of keys and values from
+					the table (order not guaranteed). E.g., <code
+						class="font-mono">{{ a: 1, b: 2 }}</code
+					> might become <code class="font-mono">[a, 1, b, 2]</code> or
+					<code class="font-mono">[b, 2, a, 1]</code>.
+				</li>
+				<li>
+					Other types: Returns a single-element array containing the
+					original value.
+				</li>
+			</ul>
+
+			<h4 class="text-lg font-semibold mt-4 mb-2">
+				Result Version: <code class="font-mono">array()</code>
+			</h4>
+			<FunctionSignature
+				signature={`array(value: any) -> Result<array>`}
+			/>
+			<p class="mt-1 mb-3">
+				Returns a <code class="font-mono">Result</code> containing the array.
+			</p>
+			<h5 class="font-semibold mb-1">Returns</h5>
+			<p class="mb-1">
+				<code class="font-mono">Ok(array)</code>: The converted array.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				fails during conversion (RUNTIME/MEMORY error).
+			</p>
+
+			<h4 class="text-lg font-semibold mt-4 mb-2">
+				Direct Version: <code class="font-mono">_array()</code>
+			</h4>
+			<FunctionSignature
+				signature={`_array(value: any) -> array | nil`}
+			/>
+			<p class="mt-1 mb-3">
+				Returns the array directly, or <code class="font-mono">nil</code
+				> on memory allocation failure.
+			</p>
+			<h5 class="font-semibold mb-1">Returns</h5>
+			<p class="mb-3">
+				(<code class="font-mono">array</code>) or (<code
+					class="font-mono">nil</code
+				>)
+			</p>
+
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="builtin-array-example"
+				code={`
+println(_array("abc"));     // Output: ["a", "b", "c"]
+println(_array([1, 2]));   // Output: [1, 2]
+println(_array({k:1, v:2}));// Output: [k, 1, v, 2] (or [v, 2, k, 1])
+println(_array(123));      // Output: [123]
+println(_array(nil));      // Output: [nil]
+
+match array("hi") { Ok(a)=>println(a), Err(e)=>println(e.message()) } // Output: ["h", "i"]
+            `}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="builtin-table" class="block relative -top-16 invisible"></a>
+			<h2 class="text-xl font-bold mb-3">table / _table</h2>
+			<p class="mb-3">Converts a value to a table.</p>
+			<h4 class="text-md font-semibold mt-3 mb-2">Conversion Rules:</h4>
+			<ul class="list-disc ml-6 mb-3 text-sm">
+				<li><code class="font-mono">table</code>: Returns itself.</li>
+				<li>
+					<code class="font-mono">array</code>: Returns a table where
+					keys are integer indices (0, 1, 2...) and values are the
+					corresponding array elements.
+				</li>
+				<li>
+					<code class="font-mono">string</code>: Returns a table where
+					keys are integer indices (0, 1, 2...) and values are
+					single-character strings from the original string.
+				</li>
+				<li>
+					Other types: Returns a table with a single entry: key <code
+						class="font-mono">0</code
+					>, value is the original value.
+				</li>
+			</ul>
+
+			<h4 class="text-lg font-semibold mt-4 mb-2">
+				Result Version: <code class="font-mono">table()</code>
+			</h4>
+			<FunctionSignature
+				signature={`table(value: any) -> Result<table>`}
+			/>
+			<p class="mt-1 mb-3">
+				Returns a <code class="font-mono">Result</code> containing the table.
+			</p>
+			<h5 class="font-semibold mb-1">Returns</h5>
+			<p class="mb-3">
+				<code class="font-mono">Ok(table)</code>: The converted table.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				fails during conversion (MEMORY error).
+			</p>
+
+			<h4 class="text-lg font-semibold mt-4 mb-2">
+				Direct Version: <code class="font-mono">_table()</code>
+			</h4>
+			<FunctionSignature
+				signature={`_table(value: any) -> table | nil`}
+			/>
+			<p class="mt-1 mb-3">
+				Returns the table directly, or <code class="font-mono">nil</code
+				> on memory allocation failure.
+			</p>
+			<h5 class="font-semibold mb-1">Returns</h5>
+			<p class="mb-3">
+				(<code class="font-mono">table</code>) or (<code
+					class="font-mono">nil</code
+				>)
+			</p>
+
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="builtin-table-example"
+				code={`
+println(_table({k:1}));   // Output: {k:1}
+println(_table([10, 20])); // Output: {0:10, 1:20}
+println(_table("ab"));    // Output: {0:"a", 1:"b"}
+println(_table(123));     // Output: {0:123}
+println(_table(nil));     // Output: {0:nil}
+
+match table("cd") { Ok(t)=>println(t), Err(e)=>println(e.message()) } // Output: {0:"c", 1:"d"}
+            `}
+			/>
+		</section>
+	</div>
+</Layout>

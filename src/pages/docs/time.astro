@@ -1,0 +1,326 @@
+---
+import CodeBlock from "../../components/CodeBlock.astro";
+import Layout from "../../layouts/Layout.astro";
+import FunctionSignature from "../../components/FunctionSignature.astro";
+import ParameterList from "../../components/ParameterList.astro";
+---
+
+<Layout title="Standard Library: Time Module">
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300">
+			Time Module
+		</h1>
+		<p class="mb-6">
+			The Time module provides functions for retrieving the current system
+			time, pausing execution, and accessing components of the current
+			date and time based on the system's local timezone.
+		</p>
+		<p class="mb-6">
+			Some functions return values directly, while others (like sleep
+			functions) return a <code class="font-mono">Result</code> type which
+			should be handled appropriately, often with a <code
+				class="font-mono">match</code
+			> statement.
+		</p>
+		<p class="mb-6">To use functions from this module:</p>
+		<CodeBlock
+			id="time-import-example"
+			code={`
+// Example import (adjust path and names based on your module system)
+use time_s, time_ms, sleep_s, sleep_ms, year, month, day from "crux:time";
+`}
+		/>
+
+		<h2 class="text-2xl font-bold mb-4 mt-8">Epoch Time Functions</h2>
+		<p class="mb-6">
+			These functions return the time elapsed since the Unix epoch
+			(00:00:00 UTC on 1 January 1970).
+		</p>
+
+		<section class="mb-8">
+			<a id="time-seconds" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">time_s</h3>
+			<p class="mb-3">
+				Returns the current system time as the number of seconds since
+				the Unix epoch.
+			</p>
+			<p class="mb-3 italic">
+				Note: This function returns a value directly, not a Result.
+			</p>
+			<FunctionSignature signature={`time_s() -> float`} />
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-3">
+				A <code class="font-mono">float</code> representing the number of
+				seconds since the epoch. The precision may be limited to whole seconds.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="time-seconds-example"
+				code={`
+use time_s from "crux:time";
+let seconds_since_epoch = time_s();
+println("Seconds since epoch: " + seconds_since_epoch); // e.g., 1678886400.0
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="time-milliseconds" class="block relative -top-16 invisible"
+			></a>
+			<h3 class="text-xl font-bold mb-3">time_ms</h3>
+			<p class="mb-3">
+				Returns the current system time as the number of milliseconds
+				since the Unix epoch.
+			</p>
+			<p class="mb-3 italic">
+				Note: This function returns a value directly, not a Result.
+			</p>
+			<FunctionSignature signature={`time_ms() -> float`} />
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-3">
+				A <code class="font-mono">float</code> representing the number of
+				milliseconds since the epoch. Offers higher precision than <code
+					class="font-mono">time_s()</code
+				>.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="time-milliseconds-example"
+				code={`
+use time_ms from "crux:time";
+let start_time = time_ms();
+// ... perform some operations ...
+let end_time = time_ms();
+let duration = end_time - start_time;
+println("Operation took " + duration + " ms.");
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Sleep Functions</h2>
+		<p class="mb-6">
+			These functions pause the execution of the current script.
+		</p>
+
+		<section class="mb-8">
+			<a id="time-sleep-seconds" class="block relative -top-16 invisible"
+			></a>
+			<h3 class="text-xl font-bold mb-3">sleep_s</h3>
+			<p class="mb-3">
+				Pauses execution for the specified duration in seconds.
+			</p>
+			<FunctionSignature
+				signature={`sleep_s(duration: int | float) -> Result<nil>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="duration"
+					type="int | float"
+					desc="The number of seconds to sleep. Must be non-negative."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(nil)</code>: Indicates the sleep
+				completed successfully.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">duration</code
+				> is not an <code class="font-mono">int</code> or <code
+					class="font-mono">float</code
+				> (TYPE error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">duration</code
+				> is negative (VALUE error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="time-sleep-seconds-example"
+				code={`
+use sleep_s, time_s from "crux:time";
+
+println("Starting at: " + time_s());
+match sleep_s(2) { // Sleep for 2 seconds
+    Ok(_) => {
+        println("Woke up at: " + time_s());
+    }
+    Err(e) => {
+        println("Sleep error: " + e.message);
+    }
+}
+
+match sleep_s(-1) {
+    Ok(_) => {}
+    Err(e) => {
+        println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: Sleep duration cannot be negative. (Type: VALUE)
+    }
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a
+				id="time-sleep-milliseconds"
+				class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">sleep_ms</h3>
+			<p class="mb-3">
+				Pauses execution for the specified duration in milliseconds.
+			</p>
+			<FunctionSignature
+				signature={`sleep_ms(duration: int | float) -> Result<nil>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="duration"
+					type="int | float"
+					desc="The number of milliseconds to sleep. Must be non-negative."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(nil)</code>: Indicates the sleep
+				completed successfully.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">duration</code
+				> is not an <code class="font-mono">int</code> or <code
+					class="font-mono">float</code
+				> (TYPE error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">duration</code
+				> is negative (VALUE error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="time-sleep-milliseconds-example"
+				code={`
+use sleep_ms, time_ms from "crux:time";
+
+println("Starting at: " + time_ms());
+match sleep_ms(500) { // Sleep for 500 milliseconds
+    Ok(_) => {
+        println("Woke up at: " + time_ms());
+    }
+    Err(e) => {
+        println("Sleep error: " + e.message);
+    }
+}
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Date & Time Component Functions</h2>
+		<p class="mb-6">
+			These functions return individual components of the current date and
+			time based on the system's local timezone. They all return integer
+			values directly.
+		</p>
+
+		<section class="mb-8">
+			<a id="time-year" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">year</h3>
+			<p class="mb-3">Returns the current year (e.g., 2023).</p>
+			<FunctionSignature signature={`year() -> int`} />
+			<CodeBlock
+				id="time-year-example"
+				code={`use year from "crux:time"; println("Current year: " + year());`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="time-month" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">month</h3>
+			<p class="mb-3">
+				Returns the current month (1 = January, ..., 12 = December).
+			</p>
+			<FunctionSignature signature={`month() -> int`} />
+			<CodeBlock
+				id="time-month-example"
+				code={`use month from "crux:time"; println("Current month: " + month());`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="time-day" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">day</h3>
+			<p class="mb-3">Returns the current day of the month (1-31).</p>
+			<FunctionSignature signature={`day() -> int`} />
+			<CodeBlock
+				id="time-day-example"
+				code={`use day from "crux:time"; println("Current day: " + day());`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="time-hour" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">hour</h3>
+			<p class="mb-3">Returns the current hour (0-23, 24-hour format).</p>
+			<FunctionSignature signature={`hour() -> int`} />
+			<CodeBlock
+				id="time-hour-example"
+				code={`use hour from "crux:time"; println("Current hour: " + hour());`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="time-minute" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">minute</h3>
+			<p class="mb-3">Returns the current minute (0-59).</p>
+			<FunctionSignature signature={`minute() -> int`} />
+			<CodeBlock
+				id="time-minute-example"
+				code={`use minute from "crux:time"; println("Current minute: " + minute());`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="time-second" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">second</h3>
+			<p class="mb-3">Returns the current second (0-59).</p>
+			<FunctionSignature signature={`second() -> int`} />
+			<CodeBlock
+				id="time-second-example"
+				code={`use second from "crux:time"; println("Current second: " + second());`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="time-weekday" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">weekday</h3>
+			<p class="mb-3">
+				Returns the current day of the week (1 = Monday, ..., 7 =
+				Sunday).
+			</p>
+			<FunctionSignature signature={`weekday() -> int`} />
+			<CodeBlock
+				id="time-weekday-example"
+				code={`use weekday from "crux:time"; println("Current weekday (1=Mon, 7=Sun): " + weekday());`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="time-day-of-year" class="block relative -top-16 invisible"
+			></a>
+			<h3 class="text-xl font-bold mb-3">day_of_year</h3>
+			<p class="mb-3">Returns the current day of the year (1-366).</p>
+			<FunctionSignature signature={`day_of_year() -> int`} />
+			<CodeBlock
+				id="time-day-of-year-example"
+				code={`use day_of_year from "crux:time"; println("Current day of year: " + day_of_year());`}
+			/>
+		</section>
+	</div>
+</Layout>

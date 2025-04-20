@@ -1,0 +1,201 @@
+---
+import Layout from "../layouts/Layout.astro";
+import DocTeaserBlock from "../components/DocTeaserBlock.astro";
+import Link from "../components/Link.astro";
+---
+
+<Layout title="Crux Language Documentation">
+	<div class="container mx-auto px-4 py-12">
+		<header class="text-center mb-12">
+			<h1 class="text-4xl md:text-5xl font-bold mb-4">
+				Crux Language Documentation
+			</h1>
+			<p class="text-lg text-gray-700 max-w-2xl mx-auto">
+				Welcome to the official documentation for the Crux programming
+				language. Here you'll find references for core language
+				features, built-in functions, and the standard library modules.
+			</p>
+		</header>
+
+		<div class="space-y-10">
+			<section>
+				<h2
+					class="text-3xl font-semibold mb-4 pb-2 border-b border-gray-300"
+				>
+					Core Language Features
+				</h2>
+				<p class="mb-6 text-gray-600">
+					Understand the fundamental building blocks of Crux,
+					including native data types and their associated methods.
+				</p>
+				<nav
+					class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+				>
+					<a
+						href="/docs/string"
+						class="block p-4 border border-gray-200 rounded hover:shadow-md transition-shadow"
+					>
+						<h3 class="text-xl font-medium mb-1">String Methods</h3>
+						<p class="text-sm text-gray-500">
+							Working with text data, searching, manipulation.
+						</p>
+					</a>
+					<a
+						href="/docs/array"
+						class="block p-4 border border-gray-200 rounded hover:shadow-md transition-shadow"
+					>
+						<h3 class="text-xl font-medium mb-1">Array Methods</h3>
+						<p class="text-sm text-gray-500">
+							Operations on ordered collections (lists).
+						</p>
+					</a>
+					<a
+						href="/docs/table"
+						class="block p-4 border border-gray-200 rounded hover:shadow-md transition-shadow"
+					>
+						<h3 class="text-xl font-bold mb-1">Table Methods</h3>
+						<p class="text-sm text-gray-500">
+							Operations on key-value pair collections
+							(dictionaries).
+						</p>
+					</a>
+				</nav>
+			</section>
+
+			<hr class="border-gray-300" />
+
+			<section>
+				<h2
+					class="text-3xl font-semibold mb-4 pb-2 border-b border-gray-300"
+				>
+					Built-in Functions
+				</h2>
+				<p class="mb-6 text-gray-600">
+					Functions that are always available in the global scope
+					without needing imports. These provide essential utilities
+					like type checking, length calculation, and type
+					conversions. Note the convention where functions prefixed
+					with <code class="font-mono">_</code> return values directly
+					(often <code class="font-mono">nil</code> on failure), while
+					their non-prefixed counterparts return a <code
+						class="font-mono">Result</code
+					> type.
+				</p>
+				<nav
+					class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+				>
+					<a
+						href="/docs/core"
+						class="block p-4 border border-gray-200 rounded hover:shadow-md transition-shadow"
+					>
+						<h3 class="text-xl font-medium mb-1">Core Utilities</h3>
+						<p class="text-sm text-gray-500">
+							Includes <code class="font-mono">len</code>, <code
+								class="font-mono">_type</code
+							>, and type conversions (<code class="font-mono"
+								>int</code
+							>, <code class="font-mono">float</code>, <code
+								class="font-mono">string</code
+							>, etc.).
+						</p>
+					</a>
+				</nav>
+			</section>
+
+			<hr class="border-gray-300" />
+
+			<section>
+				<h2
+					class="text-3xl font-semibold mb-4 pb-2 border-b border-gray-300"
+				>
+					Standard Library Modules
+				</h2>
+				<p class="mb-6 text-gray-600">
+					Modules providing extended functionality that can be
+					imported into your scripts. Use the <code class="font-mono"
+						>use</code
+					> keyword to import specific functions or entire modules.
+				</p>
+				<nav
+					class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+				>
+					<a
+						href="/docs/io"
+						class="block p-4 border border-gray-200 rounded hover:shadow-md transition-shadow"
+					>
+						<h3 class="text-xl font-medium mb-1">
+							IO Module (<code class="font-mono">io</code>)
+						</h3>
+						<p class="text-sm text-gray-500">
+							Standard input/output operations and file handling.
+						</p>
+					</a>
+					<a
+						href="/docs/error"
+						class="block p-4 border border-gray-200 rounded hover:shadow-md transition-shadow"
+					>
+						<h3 class="text-xl font-medium mb-1">
+							Error Handling (<code class="font-mono">error</code
+							>)
+						</h3>
+						<p class="text-sm text-gray-500">
+							Creating errors, asserting conditions, panicking.
+						</p>
+					</a>
+					<a
+						href="/docs/math"
+						class="block p-4 border border-gray-200 rounded hover:shadow-md transition-shadow"
+					>
+						<h3 class="text-xl font-medium mb-1">
+							Math Module (<code class="font-mono">math</code>)
+						</h3>
+						<p class="text-sm text-gray-500">
+							Mathematical functions and constants.
+						</p>
+					</a>
+					<a
+						href="/docs/random"
+						class="block p-4 border border-gray-200 rounded hover:shadow-md transition-shadow"
+					>
+						<h3 class="text-xl font-medium mb-1">
+							Random Module (<code class="font-mono">random</code
+							>)
+						</h3>
+						<p class="text-sm text-gray-500">
+							Pseudo-random number generation and choices.
+						</p>
+					</a>
+					<a
+						href="/docs/sys"
+						class="block p-4 border border-gray-200 rounded hover:shadow-md transition-shadow"
+					>
+						<h3 class="text-xl font-medium mb-1">
+							System Module (<code class="font-mono">sys</code>)
+						</h3>
+						<p class="text-sm text-gray-500">
+							Interacting with the system environment (args, env
+							vars, platform).
+						</p>
+					</a>
+					<DocTeaserBlock
+						title="Time"
+						name="time"
+						description="Time-related functions, including epoch time and sleeping."
+						link="docs/time"
+					/>
+				</nav>
+			</section>
+
+			<hr class="border-gray-300" />
+
+			<section class="text-center mt-12">
+				<h2 class="text-2xl font-semibold mb-3">New to Crux?</h2>
+				<p class="text-gray-600 mb-4">
+					Consider checking out the language tutorial or examples to
+					get started.
+				</p>
+				<Link href="/docs/lang-guide" content="Language Guide" />
+			</section>
+		</div>
+	</div>
+</Layout>

@@ -1,0 +1,26 @@
+---
+import NameLogo from "./NameLogo.astro";
+import Link from "./Link.astro";
+---
+
+<div
+	class="w-full py-2 fixed top-0 z-50 shadow-sm dark:shadow-lg bg-neutral-800"
+>
+	<nav class="container mx-auto flex justify-between items-center">
+		<div class="flex items-center gap-2">
+			<a href="/" class="flex items-center h-12 w-24">
+				<NameLogo />
+			</a>
+		</div>
+		<ul class="flex gap-8">
+			<li><Link href="/download" content="Downloads" /></li>
+			<li><Link href="/docs" content="Documentation" /></li>
+			<li class="text-gray-200 flex gap-2 items-center justify-center">
+				<Link
+					href="https://github.com/TheophilusNenhanga/crux-lang"
+					content="Source"
+				/>
+			</li>
+		</ul>
+	</nav>
+</div>

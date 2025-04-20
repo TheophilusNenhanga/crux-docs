@@ -1,0 +1,222 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+// --- Configuration ---
+// Read from environment variables (preferred)
+const GITHUB_TOKEN = import.meta.env.GITHUB_TOKEN ?? "";
+const OWNER = import.meta.env.GITHUB_REPO_OWNER ?? "";
+const REPO = import.meta.env.GITHUB_REPO_NAME ?? "";
+
+// Or hardcode here if you skip .env (less recommended for token)
+// const OWNER = "your_github_username_or_org";
+// const REPO = "your_repository_name";
+// const GITHUB_TOKEN = undefined; // Or your token directly (unsafe)
+// ---
+
+interface Asset {
+	name: string;
+	browser_download_url: string;
+	size: number;
+	content_type: string;
+}
+
+interface Release {
+	tag_name: string;
+	name: string;
+	html_url: string;
+	published_at: string;
+	body: string;
+	assets: Asset[];
+	prerelease: boolean;
+	draft: boolean;
+}
+
+let releases: Release[] = [];
+let fetchError: string | null = null;
+
+function formatBytes(bytes: number, decimals = 2): string {
+	if (!+bytes) return "0 Bytes";
+	const k = 1024;
+	const dm = decimals < 0 ? 0 : decimals;
+	const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+	const i = Math.floor(Math.log(bytes) / Math.log(k));
+	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
+try {
+	if (!OWNER || !REPO) {
+		throw new Error(
+			"GITHUB_REPO_OWNER and GITHUB_REPO_NAME must be set in .env",
+		);
+	}
+
+	const apiUrl = `https://api.github.com/repos/${OWNER}/${REPO}/releases`;
+	const headers: HeadersInit = {
+		Accept: "application/vnd.github.v3+json",
+	};
+	if (GITHUB_TOKEN) {
+		headers.Authorization = `token ${GITHUB_TOKEN}`;
+	}
+
+	const response = await fetch(apiUrl, { headers });
+
+	if (!response.ok) {
+		const errorBody = await response.text();
+		console.error("GitHub API Error Response:", errorBody);
+		throw new Error(
+			`GitHub API request failed: ${response.status} ${response.statusText}`,
+		);
+	}
+
+	const data: Release[] = await response.json();
+	releases = data.filter((release) => !release.draft);
+} catch (error: unknown) {
+	console.error("Failed to fetch GitHub releases:", error);
+	if (error instanceof Error) {
+		fetchError = `Failed to load release data: ${error.message}. Please try again later or check the GitHub releases page directly.`;
+	} else {
+		fetchError = "An unknown error occurred while fetching release data.";
+	}
+}
+---
+
+<Layout title="Crux Language Downloads">
+	<div class="container mx-auto px-4 py-12">
+		<header class="text-center mb-12">
+			<h1 class="text-4xl md:text-5xl font-bold mb-4">Download Crux</h1>
+			<p class="text-lg text-gray-700 max-w-2xl mx-auto">
+				Download the latest stable releases of the Crux programming
+				language. Assets are hosted directly on GitHub.
+			</p>
+		</header>
+
+		{
+			fetchError && (
+				<div
+					class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-8"
+					role="alert"
+				>
+					<strong class="font-bold">Error:</strong>
+					<span class="block sm:inline"> {fetchError}</span>
+					<p class="mt-2">
+						You can always find releases directly on the
+						<a
+							href={`https://github.com/${OWNER}/${REPO}/releases`}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="font-medium text-blue-600 hover:underline"
+						>
+							GitHub Releases page
+						</a>
+						.
+					</p>
+				</div>
+			)
+		}
+
+		{
+			!fetchError && releases.length === 0 && (
+				<div class="text-center text-gray-600 py-8">
+					<p class="mb-4">No releases found.</p>
+					<p>
+						Check the{" "}
+						<a
+							href={`https://github.com/${OWNER}/${REPO}/releases`}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="font-medium text-blue-600 hover:underline"
+						>
+							GitHub Releases page
+						</a>{" "}
+						for the latest updates.
+					</p>
+				</div>
+			)
+		}
+
+		<div class="space-y-10">
+			{
+				releases.map((release) => (
+					<section
+						class="border border-gray-200 rounded-lg p-6 shadow-sm"
+						aria-labelledby={`release-${release.tag_name}`}
+					>
+						<header class="mb-4 pb-3 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+							<div>
+								<h2
+									id={`release-${release.tag_name}`}
+									class="text-2xl font-semibold"
+								>
+									{release.name || release.tag_name}
+									{release.prerelease && (
+										<span class="ml-2 text-sm font-medium bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">
+											Pre-release
+										</span>
+									)}
+								</h2>
+								<p class="text-sm text-gray-500 mt-1">
+									Released on:{" "}
+									{new Date(
+										release.published_at,
+									).toLocaleDateString("en-US", {
+										year: "numeric",
+										month: "long",
+										day: "numeric",
+									})}
+									{" | "}
+									<a
+										href={release.html_url}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="text-blue-600 hover:underline"
+									>
+										View on GitHub
+									</a>
+								</p>
+							</div>
+							<a
+								href={release.html_url}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="inline-block bg-gray-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-gray-700 whitespace-nowrap"
+							>
+								View Release Notes
+							</a>
+						</header>
+
+						<div class="mt-4">
+							<h3 class="text-lg font-medium mb-3">Assets</h3>
+							{release.assets && release.assets.length > 0 ? (
+								<ul class="space-y-2">
+									{release.assets.map((asset) => (
+										<li class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-t border-gray-100 pt-2 pb-1">
+											<div class="font-mono text-sm break-all">
+												{asset.name}
+												<span class="text-xs text-gray-500 ml-2">
+													({formatBytes(asset.size)})
+												</span>
+											</div>
+											<a
+												href={
+													asset.browser_download_url
+												}
+												download={asset.name}
+												class="inline-block mt-1 sm:mt-0 bg-blue-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-blue-700 whitespace-nowrap"
+											>
+												Download
+											</a>
+										</li>
+									))}
+								</ul>
+							) : (
+								<p class="text-sm text-gray-500 ">
+									No assets attached to this release.
+								</p>
+							)}
+						</div>
+					</section>
+				))
+			}
+		</div>
+	</div>
+</Layout>

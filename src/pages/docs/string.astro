@@ -1,0 +1,864 @@
+---
+import CodeBlock from "../../components/CodeBlock.astro";
+import Layout from "../../layouts/Layout.astro";
+import FunctionSignature from "../../components/FunctionSignature.astro";
+import ParameterList from "../../components/ParameterList.astro";
+---
+
+<Layout title="Standard Library: String Methods">
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300">
+			String Methods
+		</h1>
+		<p class="mb-6">
+			Strings are immutable sequences of characters. The following methods
+			provide ways to access characters, manipulate case, extract
+			substrings, search, replace, and check properties of string
+			instances.
+		</p>
+		<p class="mb-6">
+			Many methods return a new string or another value wrapped in a <code
+				class="font-mono">Result</code
+			>
+			type (<code class="font-mono">Ok</code> or <code class="font-mono"
+				>Err</code
+			>), requiring error handling (e.g., using
+			<code class="font-mono">match</code>). Methods prefixed with an
+			underscore (<code class="font-mono">_</code>) return their result
+			directly without a <code class="font-mono">Result</code> wrapper.
+		</p>
+
+		<h2 class="text-2xl font-bold mb-4 mt-8">Accessing Characters</h2>
+
+		<section class="mb-8">
+			<a id="string-first" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">first</h3>
+			<p class="mb-3">
+				Returns the first character of the string as a new string.
+			</p>
+			<FunctionSignature
+				signature={`string.first(self) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="string"
+					desc="The string instance."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A new string
+				containing the first character.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the string is
+				empty (VALUE error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="string-first-example"
+				code={`
+let word = "hello";
+match word.first() {
+    Ok(char) => println("First character: " + char); // Output: First character: h
+    Err(e) => println("Error: " + e.message);
+}
+
+let empty = "";
+match empty.first() {
+    Ok(char) => println(char);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: 'string' must have at least one character... (Type: VALUE)
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="string-last" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">last</h3>
+			<p class="mb-3">
+				Returns the last character of the string as a new string.
+			</p>
+			<FunctionSignature
+				signature={`string.last(self) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="string"
+					desc="The string instance."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A new string
+				containing the last character.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the string is
+				empty (VALUE error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="string-last-example"
+				code={`
+let word = "hello";
+match word.last() {
+    Ok(char) => println("Last character: " + char); // Output: Last character: o
+    Err(e) => println("Error: " + e.message);
+}
+
+let empty = "";
+match empty.last() {
+    Ok(char) => println(char);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: 'string' must have at least one character... (Type: VALUE)
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="string-get" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">get</h3>
+			<p class="mb-3">
+				Returns the character at the specified index as a new string.
+			</p>
+			<FunctionSignature
+				signature={`string.get(self, index: int) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="string"
+					desc="The string instance."
+				/>
+				<ParameterList
+					name="index"
+					type="int"
+					desc="The zero-based index of the character to retrieve."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A new string
+				containing the character at the given index.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">index</code
+				> is not an integer (TYPE error).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">index</code
+				> is negative or out of bounds (INDEX_OUT_OF_BOUNDS error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the string is
+				empty (VALUE error - though INDEX_OUT_OF_BOUNDS usually occurs
+				first).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="string-get-example"
+				code={`
+let word = "hello";
+match word.get(1) { // Get character at index 1
+    Ok(char) => println("Character at index 1: " + char); // Output: Character at index 1: e
+    Err(e) => println("Error: " + e.message);
+}
+
+match word.get(10) { // Index out of bounds
+    Ok(char) => println(char);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: <index> must be a non negative number... (Type: INDEX_OUT_OF_BOUNDS)
+}
+
+match word.get(-1) { // Negative index
+    Ok(char) => println(char);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: <index> must be a non negative number... (Type: INDEX_OUT_OF_BOUNDS)
+}
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Case & Whitespace Manipulation</h2>
+
+		<section class="mb-8">
+			<a id="string-upper" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">upper</h3>
+			<p class="mb-3">
+				Returns a new string with all alphabetic characters converted to
+				uppercase.
+			</p>
+			<FunctionSignature
+				signature={`string.upper(self) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A new string with
+				uppercase characters. Returns an empty string if the original
+				was empty.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				fails (MEMORY error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="string-upper-example"
+				code={`
+let mixed = "Hello World 123";
+match mixed.upper() {
+    Ok(u) => println(u); // Output: HELLO WORLD 123
+    Err(e) => println("Error: " + e.message);
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="string-lower" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">lower</h3>
+			<p class="mb-3">
+				Returns a new string with all alphabetic characters converted to
+				lowercase.
+			</p>
+			<FunctionSignature
+				signature={`string.lower(self) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A new string with
+				lowercase characters. Returns an empty string if the original
+				was empty.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				fails (MEMORY error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="string-lower-example"
+				code={`
+let mixed = "Hello World 123";
+match mixed.lower() {
+    Ok(l) => println(l); // Output: hello world 123
+    Err(e) => println("Error: " + e.message);
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="string-strip" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">strip</h3>
+			<p class="mb-3">
+				Returns a new string with leading and trailing whitespace
+				removed. Whitespace includes spaces, tabs, newlines, etc.
+			</p>
+			<FunctionSignature
+				signature={`string.strip(self) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A new string with
+				surrounding whitespace removed. Returns an empty string if the
+				original contained only whitespace or was empty.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				fails (MEMORY error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="string-strip-example"
+				code={`
+let padded = "   hello world\t\n ";
+match padded.strip() {
+    Ok(s) => println("'" + s + "'"); // Output: 'hello world'
+    Err(e) => println("Error: " + e.message);
+}
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Substrings & Splitting</h2>
+
+		<section class="mb-8">
+			<a id="string-substring" class="block relative -top-16 invisible"
+			></a>
+			<h3 class="text-xl font-bold mb-3">substring</h3>
+			<p class="mb-3">
+				Returns a new string containing characters from the <code
+					class="font-mono">start</code
+				> index up to (but not including) the <code class="font-mono"
+					>end</code
+				> index.
+			</p>
+			<FunctionSignature
+				signature={`string.substring(self, start: int, end: int) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="string"
+					desc="The string instance."
+				/>
+				<ParameterList
+					name="start"
+					type="int"
+					desc="The zero-based starting index (inclusive)."
+				/>
+				<ParameterList
+					name="end"
+					type="int"
+					desc="The zero-based ending index (exclusive)."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: The extracted
+				substring.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">start</code
+				> or <code class="font-mono">end</code> are not integers (VALUE error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If indices are
+				negative, <code class="font-mono">start</code>
+				<code class="font-mono">end</code>, or indices exceed string
+				length (INDEX_OUT_OF_BOUNDS error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="string-substring-example"
+				code={`
+let text = "programming";
+match text.substring(3, 7) { // Characters from index 3 up to 7
+    Ok(sub) => println(sub); // Output: gram
+    Err(e) => println("Error: " + e.message);
+}
+
+match text.substring(8, 20) { // End index out of bounds
+    Ok(sub) => println(sub);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: Index out of bounds. (Type: INDEX_OUT_OF_BOUNDS)
+}
+
+match text.substring(7, 3) { // Start > End
+    Ok(sub) => println(sub);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: Index out of bounds. (Type: INDEX_OUT_OF_BOUNDS)
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="string-split" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">split</h3>
+			<p class="mb-3">
+				Splits the string into an array of substrings using the given
+				delimiter. The delimiter itself is not included in the resulting
+				substrings.
+			</p>
+			<FunctionSignature
+				signature={`string.split(self, delimiter: string) -> Result<Array<string>>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="string"
+					desc="The string instance."
+				/>
+				<ParameterList
+					name="delimiter"
+					type="string"
+					desc="The string to use as a separator."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono"
+					>Ok(Array<string>)</string>: An array of substrings.
+					<ul class="list-disc ml-6">
+						<li>
+							If the delimiter is not found, the array contains
+							the original string as its only element.
+						</li>
+						<li>
+							If the string starts or ends with the delimiter, or
+							if delimiters are adjacent, empty strings will be
+							included in the result.
+						</li>
+						<li>
+							If the original string is empty, returns an array
+							containing one empty string.
+						</li>
+					</ul>
+				</code>
+				<p class="mb-1">
+					<code class="font-mono">Err(Error)</code>: If <code
+						class="font-mono">delimiter</code
+					> is not a string or is empty (TYPE error).
+				</p>
+				<p class="mb-3">
+					<code class="font-mono">Err(Error)</code>: If memory
+					allocation fails (MEMORY error).
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<CodeBlock
+					id="string-split-example"
+					code={`
+let data = "apple,banana,cherry";
+match data.split(",") {
+    Ok(parts) => println(parts); // Output: ["apple", "banana", "cherry"]
+    Err(e) => println("Error: " + e.message);
+}
+
+let spaced = "one  two three";
+match spaced.split(" ") {
+    Ok(parts) => println(parts); // Output: ["one", "", "two", "three"]
+    Err(e) => println("Error: " + e.message);
+}
+
+let edge_cases = ",a,,b,";
+match edge_cases.split(",") {
+    Ok(parts) => println(parts); // Output: ["", "a", "", "b", ""]
+    Err(e) => println("Error: " + e.message);
+}
+
+match data.split("") { // Empty delimiter error
+    Ok(parts) => println(parts);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: <delimiter> cannot be empty. (Type: TYPE)
+}
+`}
+				/>
+			</p>
+
+			<hr class="border-gray-300 my-8" />
+
+			<h2 class="text-2xl font-bold mb-4">Searching & Replacing</h2>
+
+			<section class="mb-8">
+				<a id="string-contains" class="block relative -top-16 invisible"
+				></a>
+				<h3 class="text-xl font-bold mb-3">contains</h3>
+				<p class="mb-3">
+					Checks if the string contains the given substring (<code
+						class="font-mono">goal</code
+					>). Uses the KMP algorithm for efficient searching.
+				</p>
+				<FunctionSignature
+					signature={`string.contains(self, goal: string) -> Result<bool>`}
+				/>
+				<h3 class="text-lg font-semibold mb-2">Params</h3>
+				<ul class="list-disc ml-6 mb-3">
+					<ParameterList
+						name="self"
+						type="string"
+						desc="The string instance to search within."
+					/>
+					<ParameterList
+						name="goal"
+						type="string"
+						desc="The substring to search for."
+					/>
+				</ul>
+				<h3 class="text-lg font-semibold mb-2">Returns</h3>
+				<p class="mb-1">
+					<code class="font-mono">Ok(bool)</code>: <code
+						class="font-mono">true</code
+					> if the <code class="font-mono">goal</code> substring is found,
+					<code class="font-mono">false</code> otherwise. Returns <code
+						class="font-mono">true</code
+					> if <code class="font-mono">goal</code> is empty.
+				</p>
+				<p class="mb-1">
+					<code class="font-mono">Err(Error)</code>: If <code
+						class="font-mono">goal</code
+					> is not a string (TYPE error).
+				</p>
+				<p class="mb-3">
+					<code class="font-mono">Err(Error)</code>: If memory
+					allocation for the KMP prefix table fails (MEMORY error).
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<CodeBlock
+					id="string-contains-example"
+					code={`
+let sentence = "the quick brown fox";
+match sentence.contains("quick") {
+    Ok(found) => println(found); // Output: true
+    Err(e) => println("Error: " + e.message);
+}
+
+match sentence.contains("lazy") {
+    Ok(found) => println(found); // Output: false
+    Err(e) => println("Error: " + e.message);
+}
+
+match sentence.contains("") {
+    Ok(found) => println(found); // Output: true
+    Err(e) => println("Error: " + e.message);
+}
+`}
+				/>
+			</section>
+
+			<section class="mb-8">
+				<a
+					id="string-startsWith"
+					class="block relative -top-16 invisible"></a>
+				<h3 class="text-xl font-bold mb-3">startsWith</h3>
+				<p class="mb-3">
+					Checks if the string starts with the given prefix string.
+				</p>
+				<FunctionSignature
+					signature={`string.startsWith(self, prefix: string) -> Result<bool>`}
+				/>
+				<h3 class="text-lg font-semibold mb-2">Params</h3>
+				<ul class="list-disc ml-6 mb-3">
+					<ParameterList
+						name="self"
+						type="string"
+						desc="The string instance."
+					/>
+					<ParameterList
+						name="prefix"
+						type="string"
+						desc="The prefix string to check for."
+					/>
+				</ul>
+				<h3 class="text-lg font-semibold mb-2">Returns</h3>
+				<p class="mb-1">
+					<code class="font-mono">Ok(bool)</code>: <code
+						class="font-mono">true</code
+					> if the string starts with <code class="font-mono"
+						>prefix</code
+					>, <code class="font-mono">false</code> otherwise. Returns <code
+						class="font-mono">true</code
+					> if <code class="font-mono">prefix</code> is empty.
+				</p>
+				<p class="mb-3">
+					<code class="font-mono">Err(Error)</code>: If <code
+						class="font-mono">prefix</code
+					> is not a string (TYPE error).
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<CodeBlock
+					id="string-startsWith-example"
+					code={`
+let filename = "document.txt";
+match filename.startsWith("doc") {
+    Ok(yes) => println(yes); // Output: true
+    Err(e) => println("Error: " + e.message);
+}
+
+match filename.startsWith("image") {
+    Ok(yes) => println(yes); // Output: false
+    Err(e) => println("Error: " + e.message);
+}
+`}
+				/>
+			</section>
+
+			<section class="mb-8">
+				<a id="string-endsWith" class="block relative -top-16 invisible"
+				></a>
+				<h3 class="text-xl font-bold mb-3">endsWith</h3>
+				<p class="mb-3">
+					Checks if the string ends with the given suffix string.
+				</p>
+				<FunctionSignature
+					signature={`string.endsWith(self, suffix: string) -> Result<bool>`}
+				/>
+				<h3 class="text-lg font-semibold mb-2">Params</h3>
+				<ul class="list-disc ml-6 mb-3">
+					<ParameterList
+						name="self"
+						type="string"
+						desc="The string instance."
+					/>
+					<ParameterList
+						name="suffix"
+						type="string"
+						desc="The suffix string to check for."
+					/>
+				</ul>
+				<h3 class="text-lg font-semibold mb-2">Returns</h3>
+				<p class="mb-1">
+					<code class="font-mono">Ok(bool)</code>: <code
+						class="font-mono">true</code
+					> if the string ends with <code class="font-mono"
+						>suffix</code
+					>, <code class="font-mono">false</code> otherwise. Returns <code
+						class="font-mono">true</code
+					> if <code class="font-mono">suffix</code> is empty.
+				</p>
+				<p class="mb-3">
+					<code class="font-mono">Err(Error)</code>: If <code
+						class="font-mono">suffix</code
+					> is not a string (TYPE error).
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<CodeBlock
+					id="string-endsWith-example"
+					code={`
+let filename = "document.txt";
+match filename.endsWith(".txt") {
+    Ok(yes) => println(yes); // Output: true
+    Err(e) => println("Error: " + e.message);
+}
+
+match filename.endsWith(".pdf") {
+    Ok(yes) => println(yes); // Output: false
+    Err(e) => println("Error: " + e.message);
+}
+`}
+				/>
+			</section>
+
+			<section class="mb-8">
+				<a id="string-replace" class="block relative -top-16 invisible"
+				></a>
+				<h3 class="text-xl font-bold mb-3">replace</h3>
+				<p class="mb-3">
+					Returns a new string where all occurrences of a target
+					substring are replaced with a replacement string. Uses the
+					KMP algorithm to find occurrences.
+				</p>
+				<FunctionSignature
+					signature={`string.replace(self, target: string, replacement: string) -> Result<string>`}
+				/>
+				<h3 class="text-lg font-semibold mb-2">Params</h3>
+				<ul class="list-disc ml-6 mb-3">
+					<ParameterList
+						name="self"
+						type="string"
+						desc="The original string."
+					/>
+					<ParameterList
+						name="target"
+						type="string"
+						desc="The substring to search for and replace."
+					/>
+					<ParameterList
+						name="replacement"
+						type="string"
+						desc="The string to replace each occurrence of target with."
+					/>
+				</ul>
+				<h3 class="text-lg font-semibold mb-2">Returns</h3>
+				<p class="mb-1">
+					<code class="font-mono">Ok(string)</code>: A new string with
+					all replacements made. If the target is not found, returns a
+					copy of the original string.
+				</p>
+				<p class="mb-1">
+					<code class="font-mono">Err(Error)</code>: If any argument
+					is not a string (TYPE error).
+				</p>
+				<p class="mb-1">
+					<code class="font-mono">Err(Error)</code>: If the original
+					string or the target string is empty (VALUE error).
+				</p>
+				<p class="mb-1">
+					<code class="font-mono">Err(Error)</code>: If memory
+					allocation fails during processing (MEMORY error).
+				</p>
+				<p class="mb-3">
+					<code class="font-mono">Err(Error)</code>: If the resulting
+					string length would exceed the maximum allowed (VALUE
+					error).
+				</p>
+				<h3 class="text-lg font-semibold mb-2">Example</h3>
+				<CodeBlock
+					id="string-replace-example"
+					code={`
+let message = "hello world, hello universe";
+match message.replace("hello", "goodbye") {
+    Ok(replaced) => println(replaced); // Output: goodbye world, goodbye universe
+    Err(e) => println("Error: " + e.message);
+}
+
+match message.replace("planet", "earth") { // Target not found
+    Ok(replaced) => println(replaced); // Output: hello world, hello universe
+    Err(e) => println("Error: " + e.message);
+}
+
+match message.replace("", "test") { // Empty target error
+    Ok(replaced) => println(replaced);
+    Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: <target> substring must have... (Type: VALUE)
+}
+`}
+				/>
+			</section>
+
+			<hr class="border-gray-300 my-8" />
+
+			<h2 class="text-2xl font-bold mb-4">Character Type Checks</h2>
+			<p class="mb-6">
+				These methods check if all characters in the string belong to a
+				specific category. They return <code class="font-mono"
+					>bool</code
+				> directly (using the <code class="font-mono">_</code> prefix convention).
+			</p>
+
+			<section class="mb-8">
+				<a id="string-isAlNum" class="block relative -top-16 invisible"
+				></a>
+				<h3 class="text-xl font-bold mb-3">_isAlNum</h3>
+				<p class="mb-3">
+					Checks if all characters in the string are alphanumeric
+					(letters or digits).
+				</p>
+				<FunctionSignature
+					signature={`string._isAlNum(self) -> bool`}
+				/>
+				<CodeBlock
+					id="string-isAlNum-example"
+					code={`println("Alpha123"._isAlNum()); // Output: true`}
+				/>
+				<CodeBlock
+					id="string-isAlNum-example2"
+					code={`println("Alpha 123"._isAlNum()); // Output: false (contains space)`}
+				/>
+			</section>
+
+			<section class="mb-8">
+				<a id="string-isAlpha" class="block relative -top-16 invisible"
+				></a>
+				<h3 class="text-xl font-bold mb-3">_isAlpha</h3>
+				<p class="mb-3">
+					Checks if all characters in the string are alphabetic
+					(letters).
+				</p>
+				<FunctionSignature
+					signature={`string._isAlpha(self) -> bool`}
+				/>
+				<CodeBlock
+					id="string-isAlpha-example"
+					code={`println("Alpha"._isAlpha()); // Output: true`}
+				/>
+				<CodeBlock
+					id="string-isAlpha-example2"
+					code={`println("Alpha123"._isAlpha()); // Output: false (contains digits)`}
+				/>
+			</section>
+
+			<section class="mb-8">
+				<a id="string-isDigit" class="block relative -top-16 invisible"
+				></a>
+				<h3 class="text-xl font-bold mb-3">_isDigit</h3>
+				<p class="mb-3">
+					Checks if all characters in the string are digits (0-9).
+				</p>
+				<FunctionSignature
+					signature={`string._isDigit(self) -> bool`}
+				/>
+				<CodeBlock
+					id="string-isDigit-example"
+					code={`println("12345"._isDigit()); // Output: true`}
+				/>
+				<CodeBlock
+					id="string-isDigit-example2"
+					code={`println("123a45"._isDigit()); // Output: false (contains letter)`}
+				/>
+			</section>
+
+			<section class="mb-8">
+				<a id="string-isLower" class="block relative -top-16 invisible"
+				></a>
+				<h3 class="text-xl font-bold mb-3">_isLower</h3>
+				<p class="mb-3">
+					Checks if all cased characters in the string are lowercase.
+				</p>
+				<FunctionSignature
+					signature={`string._isLower(self) -> bool`}
+				/>
+				<CodeBlock
+					id="string-isLower-example"
+					code={`println("lower case 123"._isLower()); // Output: true (digits/spaces are ignored)`}
+				/>
+				<CodeBlock
+					id="string-isLower-example2"
+					code={`println("Lower Case"._isLower()); // Output: false (contains 'C')`}
+				/>
+			</section>
+
+			<section class="mb-8">
+				<a id="string-isUpper" class="block relative -top-16 invisible"
+				></a>
+				<h3 class="text-xl font-bold mb-3">_isUpper</h3>
+				<p class="mb-3">
+					Checks if all cased characters in the string are uppercase.
+				</p>
+				<FunctionSignature
+					signature={`string._isUpper(self) -> bool`}
+				/>
+				<CodeBlock
+					id="string-isUpper-example"
+					code={`println("UPPER CASE 123"._isUpper()); // Output: true (digits/spaces are ignored)`}
+				/>
+				<CodeBlock
+					id="string-isUpper-example2"
+					code={`println("Upper Case"._isUpper()); // Output: false (contains 'p', 'p', 'e', 'r', ...)`}
+				/>
+			</section>
+
+			<section class="mb-8">
+				<a id="string-isSpace" class="block relative -top-16 invisible"
+				></a>
+				<h3 class="text-xl font-bold mb-3">_isSpace</h3>
+				<p class="mb-3">
+					Checks if all characters in the string are whitespace
+					characters (space, tab, newline, etc.).
+				</p>
+				<FunctionSignature
+					signature={`string._isSpace(self) -> bool`}
+				/>
+				<CodeBlock
+					id="string-isSpace-example"
+					code={`println(" \t\n"._isSpace()); // Output: true`}
+				/>
+				<CodeBlock
+					id="string-isSpace-example2"
+					code={`println(" Hello "._isSpace()); // Output: false (contains 'H', 'e', ...)`}
+				/>
+			</section>
+
+			<hr class="border-gray-300 my-8" />
+
+			<h2 class="text-2xl font-bold mb-4">Other Checks</h2>
+
+			<section class="mb-8">
+				<a id="string-isEmpty" class="block relative -top-16 invisible"
+				></a>
+				<h3 class="text-xl font-bold mb-3">_isEmpty</h3>
+				<p class="mb-3">Checks if the string has a length of zero.</p>
+				<FunctionSignature
+					signature={`string._isEmpty(self) -> bool`}
+				/>
+				<CodeBlock
+					id="string-isEmpty-example"
+					code={`println(""._isEmpty()); // Output: true`}
+				/>
+				<CodeBlock
+					id="string-isEmpty-example2"
+					code={`println("not empty"._isEmpty()); // Output: false`}
+				/>
+			</section>
+		</section>
+	</div>
+</Layout>

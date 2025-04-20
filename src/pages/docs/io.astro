@@ -1,0 +1,914 @@
+---
+import CodeBlock from "../../components/CodeBlock.astro";
+import Layout from "../../layouts/Layout.astro";
+import FunctionSignature from "../../components/FunctionSignature.astro";
+import ParameterList from "../../components/ParameterList.astro";
+---
+
+<Layout title="Standard Library: Input/Output Module (io)">
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300">
+			Input/Output Module (io)
+		</h1>
+		<p class="mb-6">
+			The Input/Output module provides functions for interacting with
+			standard input/output streams (like the console) and for working
+			with files.
+		</p>
+		<p class="mb-6">
+			Functions dealing with standard streams often operate directly or
+			return a <code class="font-mono">Result</code> for potential I/O errors.
+			File operations typically involve opening a file to get a <code
+				class="font-mono">File</code
+			> object and then calling methods on that object.
+		</p>
+		<p class="mb-6">To use functions from this module:</p>
+		<CodeBlock
+			id="io-import-example"
+			code={`
+// Example import (adjust path based on your module system)
+use print, println, scanln, openFile from "crux:io";
+`}
+		/>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Standard Output</h2>
+		<p class="mb-6">
+			Functions for writing to the standard output stream (usually the
+			console).
+		</p>
+
+		<section class="mb-8">
+			<a id="io-print" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">print</h3>
+			<p class="mb-3">
+				Prints the string representation of a value to the standard
+				output without a trailing newline. Handles various types like
+				numbers, booleans, nil, strings, arrays, tables, and results.
+			</p>
+			<p class="mb-3 italic">
+				Note: This function returns <code class="font-mono">nil</code> directly.
+			</p>
+			<FunctionSignature signature={`print(value: any) -> nil`} />
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="value"
+					type="any"
+					desc="The value to print."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="io-print-example"
+				code={`
+use print from "crux:io";
+print("Hello, ");
+print(123);
+print("!");
+// Output: Hello, 123!
+`}
+			/>
+			<CodeBlock
+				id="io-print-collection-example"
+				code={`
+use print from "crux:io";
+let my_array = [1, "two", true];
+let my_table = {"a": 1, "b": "bee"};
+print(my_array); // Output: [1, "two", true] (Note quotes around string)
+print(my_table); // Output: {"a":1, "b":"bee"} (Order not guaranteed)
+                `}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="io-println" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">println</h3>
+			<p class="mb-3">
+				Prints the string representation of a value to the standard
+				output, followed by a newline character.
+			</p>
+			<p class="mb-3 italic">
+				Note: This function returns <code class="font-mono">nil</code> directly.
+			</p>
+			<FunctionSignature signature={`println(value: any) -> nil`} />
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="value"
+					type="any"
+					desc="The value to print."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="io-println-example"
+				code={`
+use println from "crux:io";
+println("Hello");
+println(456);
+// Output:
+// Hello
+// 456
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="io-printTo" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">printTo</h3>
+			<p class="mb-3">
+				Prints string content to a specified standard I/O channel (<code
+					class="font-mono">"stdout"</code
+				> or <code class="font-mono">"stderr"</code>).
+			</p>
+			<p class="mb-3 italic">
+				Note: Using <code class="font-mono">"stdin"</code> as a channel for
+				printing is unlikely to be useful and may error.
+			</p>
+			<FunctionSignature
+				signature={`printTo(channel: string, content: string) -> Result<bool>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="channel"
+					type="string"
+					desc="The target channel ('stdout' or 'stderr')."
+				/>
+				<ParameterList
+					name="content"
+					type="string"
+					desc="The string content to print."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(true)</code>: Indicates the write
+				likely succeeded. (The boolean value itself is often not
+				critical).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">channel</code
+				> or <code class="font-mono">content</code> are not strings (TYPE
+				error).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If an invalid <code
+					class="font-mono">channel</code
+				> name is provided (VALUE error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If an error occurs
+				during writing to the stream (IO error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="io-printTo-example"
+				code={`
+use printTo from "crux:io";
+
+match printTo("stdout", "This goes to standard output.\\n") {
+    Ok(_) => {} // Success
+    Err(e) => println("Stdout Error: " + e.message);
+}
+
+match printTo("stderr", "This is an error message.\\n") {
+     Ok(_) => {} // Success
+    Err(e) => println("Stderr Error: " + e.message); // Should not happen for stderr itself
+}
+
+match printTo("invalid", "Won't print") {
+     Ok(_) => {}
+     Err(e) => println("Error: " + e.message + " (Type: " + e.type + ")"); // Error: Invalid channel specified. (Type: VALUE)
+}
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Standard Input</h2>
+		<p class="mb-6">
+			Functions for reading from the standard input stream (usually the
+			keyboard).
+		</p>
+
+		<section class="mb-8">
+			<a id="io-scan" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">scan</h3>
+			<p class="mb-3">
+				Reads a single character from standard input. Any further
+				characters on the same line up to the newline are consumed and
+				discarded.
+			</p>
+			<FunctionSignature signature={`scan() -> Result<string>`} />
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A string containing
+				the single character read.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If an error occurs
+				reading from stdin (e.g., end-of-file) (IO error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<p class="mb-2">
+				If the user types <code class="font-mono">abc</code> and presses
+				Enter:
+			</p>
+			<CodeBlock
+				id="io-scan-example"
+				code={`
+use scan, println from "crux:io";
+println("Enter a character:");
+match scan() {
+    Ok(char) => println("You entered: '" + char + "'"); // Output: You entered: 'a'
+    Err(e) => println("Error: " + e.message);
+}
+// The 'bc' and newline are discarded.
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="io-scanln" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">scanln</h3>
+			<p class="mb-3">
+				Reads an entire line of text from standard input, up to the
+				newline character (or EOF). The trailing newline character is
+				removed from the result.
+			</p>
+			<FunctionSignature signature={`scanln() -> Result<string>`} />
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A string containing
+				the line read (without the trailing newline).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If an error occurs
+				reading from stdin (e.g., end-of-file) (IO error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<p class="mb-2">
+				If the user types <code class="font-mono">Hello World!</code> and
+				presses Enter:
+			</p>
+			<CodeBlock
+				id="io-scanln-example"
+				code={`
+use scanln, println from "crux:io";
+println("Enter a line:");
+match scanln() {
+    Ok(line) => println("You entered: '" + line + "'"); // Output: You entered: 'Hello World!'
+    Err(e) => println("Error: " + e.message);
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="io-scanFrom" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">scanFrom</h3>
+			<p class="mb-3">
+				Reads a single character from the specified standard input
+				channel (<code class="font-mono">"stdin"</code> only). Discards the
+				rest of the line.
+			</p>
+			<p class="mb-3 italic">
+				Note: Using <code class="font-mono">"stdout"</code> or <code
+					class="font-mono">"stderr"</code
+				> as channels is invalid for reading.
+			</p>
+			<FunctionSignature
+				signature={`scanFrom(channel: string) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="channel"
+					type="string"
+					desc="The source channel (must be 'stdin')."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A string containing
+				the single character read.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">channel</code
+				> is not a string (TYPE error).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If an invalid <code
+					class="font-mono">channel</code
+				> name is provided (VALUE error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If an error occurs
+				reading from the stream (IO error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="io-scanFrom-example"
+				code={`
+use scanFrom, println from "crux:io";
+println("Enter text (only first char read):");
+match scanFrom("stdin") {
+    Ok(char) => println("Read: '" + char + "'");
+    Err(e) => println("Error: " + e.message);
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="io-scanlnFrom" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">scanlnFrom</h3>
+			<p class="mb-3">
+				Reads an entire line of text from the specified standard input
+				channel (<code class="font-mono">"stdin"</code> only), removing the
+				trailing newline.
+			</p>
+			<p class="mb-3 italic">
+				Note: Using <code class="font-mono">"stdout"</code> or <code
+					class="font-mono">"stderr"</code
+				> as channels is invalid for reading.
+			</p>
+			<FunctionSignature
+				signature={`scanlnFrom(channel: string) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="channel"
+					type="string"
+					desc="The source channel (must be 'stdin')."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A string containing
+				the line read.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">channel</code
+				> is not a string (TYPE error).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If an invalid <code
+					class="font-mono">channel</code
+				> name is provided (VALUE error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If an error occurs
+				reading from the stream (IO error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="io-scanlnFrom-example"
+				code={`
+use scanlnFrom, println from "crux:io";
+println("Enter a line:");
+match scanlnFrom("stdin") {
+    Ok(line) => println("Read: '" + line + "'");
+    Err(e) => println("Error: " + e.message);
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="io-nscan" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">nscan</h3>
+			<p class="mb-3">
+				Reads up to <code class="font-mono">char_count</code> characters
+				from standard input, or until a newline or end-of-file is encountered,
+				whichever comes first. Consumes any remaining characters on the line
+				up to the newline if exactly <code class="font-mono"
+					>char_count</code
+				> characters were read and the last wasn't a newline.
+			</p>
+			<FunctionSignature
+				signature={`nscan(char_count: int) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="char_count"
+					type="int"
+					desc="The maximum number of characters to read. Must be positive."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A string containing
+				the characters read (potentially including a newline if read
+				before <code class="font-mono">char_count</code> was reached).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">char_count</code
+				> is not an integer (TYPE error).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">char_count</code
+				> is not positive (VALUE error).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				for the buffer fails (MEMORY error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If an error occurs
+				reading from stdin (IO error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<p class="mb-2">
+				If the user types <code class="font-mono">abcdefghi</code> and presses
+				Enter:
+			</p>
+			<CodeBlock
+				id="io-nscan-example"
+				code={`
+use nscan, println from "crux:io";
+println("Enter text (reading up to 5 chars):");
+match nscan(5) {
+    Ok(text) => println("Read: '" + text + "'"); // Output: Read: 'abcde'
+    Err(e) => println("Error: " + e.message);
+}
+// 'fghi' and the newline are discarded.
+
+println("Enter text (reading up to 15 chars):");
+match nscan(15) {
+    Ok(text) => println("Read: '" + text + "'"); // Output: Read: 'abcdefghi\n' (assuming user typed that)
+    Err(e) => println("Error: " + e.message);
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="io-nscanFrom" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">nscanFrom</h3>
+			<p class="mb-3">
+				Reads up to <code class="font-mono">char_count</code> characters
+				from the specified standard input channel (<code
+					class="font-mono">"stdin"</code
+				> only), or until a newline/EOF. Consumes rest of line if limit reached
+				before newline.
+			</p>
+			<p class="mb-3 italic">
+				Note: Using <code class="font-mono">"stdout"</code> or <code
+					class="font-mono">"stderr"</code
+				> as channels is invalid for reading.
+			</p>
+			<FunctionSignature
+				signature={`nscanFrom(channel: string, char_count: int) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="channel"
+					type="string"
+					desc="The source channel (must be 'stdin')."
+				/>
+				<ParameterList
+					name="char_count"
+					type="int"
+					desc="The maximum number of characters to read. Must be positive."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A string containing
+				the characters read.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">channel</code
+				> is not a string or <code class="font-mono">char_count</code> is
+				not an integer (TYPE error).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If an invalid <code
+					class="font-mono">channel</code
+				> or non-positive <code class="font-mono">char_count</code> is provided
+				(VALUE error).
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				for the buffer fails (MEMORY error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If an error occurs
+				reading from the stream (IO error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="io-nscanFrom-example"
+				code={`
+use nscanFrom, println from "crux:io";
+println("Enter text (reading up to 3 chars from stdin):");
+match nscanFrom("stdin", 3) {
+    Ok(text) => println("Read: '" + text + "'");
+    Err(e) => println("Error: " + e.message);
+}
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">File I/O</h2>
+		<p class="mb-6">
+			Functions and methods for reading from and writing to files.
+		</p>
+
+		<section class="mb-8">
+			<a id="io-openFile" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">openFile</h3>
+			<p class="mb-3">
+				Opens a file at the given path with the specified mode,
+				returning a <code class="font-mono">File</code> object handle. The
+				path is resolved relative to the currently executing module's path.
+			</p>
+			<h4 class="text-md font-semibold mt-4 mb-2">File Modes:</h4>
+			<ul class="list-disc ml-6 mb-3 text-sm">
+				<li>
+					<code class="font-mono">"r"</code>: Read (default). Error if
+					file doesn't exist.
+				</li>
+				<li>
+					<code class="font-mono">"w"</code>: Write. Creates file if
+					it doesn't exist, truncates if it does.
+				</li>
+				<li>
+					<code class="font-mono">"a"</code>: Append. Creates file if
+					it doesn't exist. Writes are added to the end.
+				</li>
+				<li>
+					<code class="font-mono">"rb"</code>, <code class="font-mono"
+						>"wb"</code
+					>, <code class="font-mono">"ab"</code>: Like above, but in
+					binary mode.
+				</li>
+				<li>
+					<code class="font-mono">"r+"</code>: Read and Write. Error
+					if file doesn't exist.
+				</li>
+				<li>
+					<code class="font-mono">"w+"</code>: Read and Write. Creates
+					or truncates file.
+				</li>
+				<li>
+					<code class="font-mono">"a+"</code>: Read and Append.
+					Creates file if needed. Reads from start, appends to end.
+				</li>
+				<li>
+					<code class="font-mono">"rb+"</code>, <code
+						class="font-mono">"wb+"</code
+					>, <code class="font-mono">"ab+"</code>: Like above, but in
+					binary mode.
+				</li>
+			</ul>
+			<FunctionSignature
+				signature={`openFile(file_path: string, file_mode: string) -> Result<File>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="file_path"
+					type="string"
+					desc="The relative or absolute path to the file."
+				/>
+				<ParameterList
+					name="file_mode"
+					type="string"
+					desc="The mode to open the file in (e.g., 'r', 'w', 'a+')."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(File)</code>: A file object handle
+				representing the opened file.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If arguments are not
+				strings, the path cannot be resolved, the mode is invalid, or
+				the file cannot be opened (IO error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="io-openFile-example"
+				code={`
+use openFile, println from "crux:io";
+
+// Example: Open 'data.txt' for reading
+match openFile("./data.txt", "r") {
+    Ok(file_handle) => {
+        println("File opened successfully!");
+        // ... use file_handle.readln(), etc. ...
+        file_handle.close(); // Remember to close the file
+    }
+    Err(e) => {
+        println("Error opening file: " + e.message + " (Type: " + e.type + ")");
+    }
+}
+
+// Example: Open 'output.log' for appending
+match openFile("output.log", "a") {
+    Ok(log_file) => {
+        println("Log file ready for appending.");
+        // ... use log_file.writeln() ...
+        log_file.close();
+    }
+    Err(e) => {
+        println("Error opening log file: " + e.message);
+    }
+}
+`}
+			/>
+		</section>
+
+		<h2 class="text-2xl font-bold mb-4 mt-8 border-t border-gray-300 pt-8">
+			File Object Methods
+		</h2>
+		<p class="mb-6">
+			Methods available on <code class="font-mono">File</code> objects returned
+			by <code class="font-mono">openFile</code>.
+		</p>
+
+		<section class="mb-8">
+			<a id="file-readln" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">File.readln</h3>
+			<p class="mb-3">
+				Reads the next line from the file object, up to a newline
+				character or EOF. The maximum line length read is currently
+				limited (around 4096 characters). The newline character itself
+				is not included in the returned string.
+			</p>
+			<FunctionSignature
+				signature={`File.readln(self) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="File"
+					desc="The file object instance."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: The line read from
+				the file. Returns an empty string if EOF is reached immediately.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If the file is not
+				open or not readable according to its mode (IO error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				fails (MEMORY error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="file-readln-example"
+				code={`
+use openFile, println from "crux:io";
+match openFile("my_file.txt", "r") {
+    Ok(f) => {
+        match f.readln() {
+            Ok(line1) => println("Line 1: " + line1);
+            Err(e) => println("Read error: " + e.message);
+        }
+         match f.readln() {
+            Ok(line2) => println("Line 2: " + line2);
+            Err(e) => println("Read error: " + e.message);
+        }
+        f.close();
+    }
+    Err(e) => println("Open error: " + e.message);
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="file-readAll" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">File.readAll</h3>
+			<p class="mb-3">
+				Reads the entire remaining content of the file from the current
+				position to the end, returning it as a single string.
+			</p>
+			<FunctionSignature
+				signature={`File.readAll(self) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="File"
+					desc="The file object instance."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: The entire content of
+				the file.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If the file is not
+				open or not readable according to its mode (IO error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If memory allocation
+				fails (MEMORY error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="file-readAll-example"
+				code={`
+use openFile, println from "crux:io";
+match openFile("config.json", "r") {
+    Ok(f) => {
+        match f.readAll() {
+            Ok(content) => println("File Content:\n" + content);
+            Err(e) => println("Read error: " + e.message);
+        }
+        f.close();
+    }
+    Err(e) => println("Open error: " + e.message);
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="file-write" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">File.write</h3>
+			<p class="mb-3">
+				Writes the given string content to the file object at the
+				current position (or appends if opened in append mode).
+			</p>
+			<FunctionSignature
+				signature={`File.write(self, content: string) -> Result<nil>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="File"
+					desc="The file object instance."
+				/>
+				<ParameterList
+					name="content"
+					type="string"
+					desc="The string content to write."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(nil)</code>: Indicates the write
+				operation was likely successful.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">content</code
+				> is not a string (IO error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the file is not
+				open, not writable/appendable, or another I/O error occurs (IO
+				error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="file-write-example"
+				code={`
+use openFile, println from "crux:io";
+match openFile("output.txt", "w") { // Open in write mode (truncates)
+    Ok(f) => {
+        match f.write("First part. ") { Ok(_) => {} Err(e) => println(e.message); }
+        match f.write("Second part.") { Ok(_) => {} Err(e) => println(e.message); }
+        f.close();
+        println("Content written to output.txt");
+    }
+    Err(e) => println("Open error: " + e.message);
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="file-writeln" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">File.writeln</h3>
+			<p class="mb-3">
+				Writes the given string content to the file object, followed by
+				a newline character.
+			</p>
+			<FunctionSignature
+				signature={`File.writeln(self, content: string) -> Result<nil>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="File"
+					desc="The file object instance."
+				/>
+				<ParameterList
+					name="content"
+					type="string"
+					desc="The string content to write."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(nil)</code>: Indicates the write
+				operation was likely successful.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">content</code
+				> is not a string (IO error).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the file is not
+				open, not writable/appendable, or another I/O error occurs (IO
+				error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="file-writeln-example"
+				code={`
+use openFile, println from "crux:io";
+match openFile("log.txt", "a") { // Open in append mode
+    Ok(f) => {
+        match f.writeln("Log entry 1.") { Ok(_) => {} Err(e) => println(e.message); }
+        match f.writeln("Log entry 2.") { Ok(_) => {} Err(e) => println(e.message); }
+        f.close();
+        println("Log entries appended to log.txt");
+    }
+    Err(e) => println("Open error: " + e.message);
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="file-close" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">File.close</h3>
+			<p class="mb-3">
+				Closes the file object, flushing any buffered data to the
+				underlying file and releasing system resources. After closing,
+				the file object can no longer be used for reading or writing.
+			</p>
+			<FunctionSignature signature={`File.close(self) -> Result<nil>`} />
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="File"
+					desc="The file object instance."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(nil)</code>: Indicates the file was
+				closed successfully.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the file is
+				already closed or an error occurs during closing (IO error).
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="file-close-example"
+				code={`
+use openFile, println from "crux:io";
+match openFile("temp.txt", "w") {
+    Ok(f) => {
+        println("File opened.");
+        // ... write some data ...
+        match f.close() {
+             Ok(_) => println("File closed successfully.");
+             Err(e) => println("Close error: " + e.message);
+        }
+        // Attempting to use f again here would likely error
+        // match f.write("more data") { ... } // Error: File is not open.
+    }
+    Err(e) => println("Open error: " + e.message);
+}
+`}
+			/>
+		</section>
+	</div>
+</Layout>

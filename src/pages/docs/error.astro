@@ -1,0 +1,527 @@
+---
+import CodeBlock from "../../components/CodeBlock.astro";
+import Layout from "../../layouts/Layout.astro";
+import FunctionSignature from "../../components/FunctionSignature.astro";
+import ParameterList from "../../components/ParameterList.astro";
+---
+
+<Layout title="Standard Library: Error Handling Module (error)">
+	<div class="container mx-auto px-4 py-8">
+		<h1 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300">
+			Error Handling Module (error)
+		</h1>
+		<p class="mb-6">
+			This module provides functions for creating and managing errors,
+			asserting conditions, and constructing <code class="font-mono"
+				>Result</code
+			> types explicitly. Errors are typically propagated using the <code
+				class="font-mono"
+				>{
+					`Result<OkValue, ErrValue />
+				type, which can be handled using <code class="font-mono"
+					>match`
+				}</code
+			> statements.
+		</p>
+		<p class="mb-6">
+			Some functions (<code class="font-mono">panic</code>, <code
+				class="font-mono">assert</code
+			>) can cause immediate program termination if an error condition is
+			met. These are known as "panicking" errors.
+		</p>
+		<p class="mb-6">To use functions from this module:</p>
+		<CodeBlock
+			id="error-import-example"
+			code={`
+// Example import (adjust path based on your module system)
+use error, panic, assert, ok, err from "crux:error";
+`}
+		/>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Creating Error Objects</h2>
+
+		<section class="mb-8">
+			<a id="error-error" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">error</h3>
+			<p class="mb-3">
+				Creates a new <code class="font-mono">Error</code> object with a
+				custom message. The value provided is converted to a string to form
+				the error message. This function returns the error object wrapped
+				in an <code class="font-mono">Ok</code> result, suitable for functions
+				that need to signal the creation of an error without immediately
+				propagating it.
+			</p>
+			<p class="mb-3 italic">
+				Note: This creates a non-panicking, RUNTIME error by default.
+				Use <code class="font-mono">err()</code> or <code
+					class="font-mono">panic()</code
+				> to immediately create an <code class="font-mono">Err</code> result.
+			</p>
+			<FunctionSignature
+				signature={`error(message: any) -> Result<Error>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="message"
+					type="any"
+					desc="The value to be converted to a string for the error message."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(Error)</code>: A Result containing
+				the newly created Error object.
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: Should not typically
+				occur from this function itself, but memory errors during string
+				conversion or error allocation are possible.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="error-error-example"
+				code={`
+use error, println from "crux:error"; // Assuming println is available
+
+match error("Something went wrong!") {
+    Ok(e) => {
+        // We have an Error object, but execution continues normally for now.
+        println("Created error object with message: " + e.message());
+        // You might store this error or return it later using err(e).
+    }
+    Err(e) => println("Failed to create error object: " + e.message); // Less likely
+}
+`}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Halting Execution (Panicking)</h2>
+		<p class="mb-6">
+			These functions immediately stop the program if an error condition
+			occurs.
+		</p>
+
+		<section class="mb-8">
+			<a id="error-panic" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">panic</h3>
+			<p class="mb-3">
+				Immediately stops program execution and reports an error (a
+				"panic"). If the provided value is already an <code
+					class="font-mono">Error</code
+				> object, it's used directly (marked as a panic). Otherwise, the
+				value is converted to a string to create a new panicking RUNTIME
+				error.
+			</p>
+			<p class="mb-3 italic">
+				This function always returns an <code class="font-mono"
+					>Err</code
+				> result conceptually, triggering the panic mechanism of the runtime.
+				Control flow does not proceed past a panic.
+			</p>
+			<FunctionSignature signature={`panic(value: any) -> !`} />
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="value"
+					type="any"
+					desc="The value or Error object representing the reason for the panic."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-3">
+				This function does not return normally; it halts the program.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="error-panic-example"
+				code={`
+use panic, println from "crux:error"; // Assuming println is available
+
+let critical_value = -1;
+
+if critical_value < 0 {
+    println("Critical error detected!");
+    panic("Value cannot be negative: " + critical_value); // Program halts here
+    println("This line will never execute.");
+}
+
+println("This line only executes if critical_value >= 0.");
+`}
+			/>
+			<CodeBlock
+				id="error-panic-with-error-example"
+				code={`
+use panic, error, println from "crux:error";
+
+fn might_fail() {
+    // ... some operation ...
+    // Simulate failure by creating an error object
+    match error("Operation failed internally") {
+        Ok(e) => give err(e); // Return an Err result
+        Err(_) => give err("Failed even to create error"); // Unlikely fallback
+    }
+}
+
+match might_fail() {
+    Ok(value) => println("Success: " + value);
+    Err(e) => {
+        println("Caught error, escalating to panic...");
+        panic(e); // Panic using the existing error object
+    }
+}
+
+println("This won't execute if might_fail() returns Err.");
+                `}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="error-assert" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">assert</h3>
+			<p class="mb-3">
+				Checks if a condition is true. If the condition is false, the
+				program halts immediately (panics) with an ASSERT error, using
+				the provided message. If the condition is true, execution
+				continues normally.
+			</p>
+			<FunctionSignature
+				signature={`assert(condition: bool, message: string) -> Result<nil>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="condition"
+					type="bool"
+					desc="The boolean condition to check."
+				/>
+				<ParameterList
+					name="message"
+					type="string"
+					desc="The error message to display if the assertion fails."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(nil)</code>: If the <code
+					class="font-mono">condition</code
+				> is true.
+			</p>
+			<p class="mb-1">
+				<code class="font-mono">Err(Error)</code>: If <code
+					class="font-mono">condition</code
+				> is not a boolean or <code class="font-mono">message</code>
+				is not a string (TYPE error, panicking).
+			</p>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: If the <code
+					class="font-mono">condition</code
+				> is false (ASSERT error, panicking). The function does not return
+				normally in this case.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="error-assert-example"
+				code={`
+use assert, println from "crux:error";
+
+let x = 5;
+let y = 10;
+
+assert(x > 0, "x should be positive"); // Condition is true, execution continues
+println("Assertion 1 passed.");
+
+assert(y == x * 2, "y should be double x"); // Condition is true, execution continues
+println("Assertion 2 passed.");
+
+// This will cause a panic:
+assert(x > y, "x ("+x+") cannot be greater than y ("+y+")"); // Condition false, program halts
+// Panic message: <assert error>: x (5) cannot be greater than y (10)
+
+println("This line will not be reached.");
+`}
+			/>
+			<CodeBlock
+				id="error-assert-type-error-example"
+				code={`
+use assert, println from "crux:error";
+
+// Type error example (will panic)
+assert("not a boolean", "This message won't matter");
+// Panic message: <type error>: Failed to assert: <condition> must be of type 'bool'.
+
+println("This line will not be reached.");
+                `}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Result Construction Helpers</h2>
+		<p class="mb-6">
+			Functions to explicitly create <code class="font-mono">Ok</code>
+			or <code class="font-mono">Err</code> variants of the <code
+				class="font-mono">Result</code
+			> type.
+		</p>
+
+		<section class="mb-8">
+			<a id="error-ok" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">ok</h3>
+			<p class="mb-3">
+				Wraps a value in the <code class="font-mono">Ok</code> variant of
+				a <code class="font-mono">Result</code>. Useful for explicitly
+				indicating success in functions that must return a Result.
+			</p>
+			<FunctionSignature
+				signature={`ok(value: any) -> Result<OkValue, ErrValue>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="value"
+					type="any"
+					desc="The successful value to wrap."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-3">
+				A <code class="font-mono">Result</code> containing the provided value
+				in its <code class="font-mono">Ok</code> variant.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="error-ok-example"
+				code={`
+use ok, println from "crux:error";
+
+fn divide(a, b) {
+    if b == 0 {
+        // Need to return a Result, use err() for failure (see below)
+        give err("Division by zero"); // Assume err() exists or is imported
+    }
+    // Use ok() to wrap the successful result
+    give ok(a / b);
+}
+
+match divide(10, 2) {
+    Ok(result) => println("Result: " + result); // Output: Result: 5
+    Err(e) => println("Error: " + e.message);
+}
+                `}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="error-err" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">err</h3>
+			<p class="mb-3">
+				Wraps a value (typically an error message or an <code
+					class="font-mono">Error</code
+				> object) in the <code class="font-mono">Err</code> variant of a
+				<code class="font-mono">Result</code>. If the provided value is
+				not already an <code class="font-mono">Error</code>
+				object, it's converted into a new non-panicking RUNTIME error.
+			</p>
+			<FunctionSignature
+				signature={`err(value: any) -> Result<OkValue, ErrValue>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="value"
+					type="any"
+					desc="The error value or object to wrap."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-3">
+				A <code class="font-mono">Result</code> containing the provided value
+				(or a newly created Error) in its <code class="font-mono"
+					>Err</code
+				> variant.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="error-err-example"
+				code={`
+use err, ok, println from "crux:error";
+
+fn process_data(data) {
+    if data == nil {
+        // Signal failure using err()
+        give err("Input data cannot be nil");
+    }
+    // ... process data ...
+    give ok("Processed successfully");
+}
+
+match process_data(nil) {
+    Ok(msg) => println(msg);
+    Err(e) => println("Error processing data: " + e.message()); // Output: Error processing data: Input data cannot be nil
+}
+
+match process_data("some data") {
+    Ok(msg) => println(msg); // Output: Processed successfully
+    Err(e) => println("Error processing data: " + e.message());
+}
+                `}
+			/>
+		</section>
+
+		<hr class="border-gray-300 my-8" />
+
+		<h2 class="text-2xl font-bold mb-4">Error Object Methods</h2>
+		<p class="mb-6">
+			Methods available on <code class="font-mono">Error</code> objects (typically
+			obtained from an <code class="font-mono">Err</code> result or the <code
+				class="font-mono">error()</code
+			> function).
+		</p>
+
+		<section class="mb-8">
+			<a id="error-message" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">Error.message</h3>
+			<p class="mb-3">
+				Returns the descriptive message associated with the error
+				object.
+			</p>
+			<FunctionSignature
+				signature={`Error.message(self) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Error"
+					desc="The error object instance."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-3">
+				<code class="font-mono">Ok(string)</code>: The error message
+				string.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="error-message-example"
+				code={`
+use err, println from "crux:error";
+
+let result = err("Something specific failed");
+
+match result {
+    Ok(_) => {}
+    Err(e) => {
+        match e.message() {
+            Ok(msg) => println("Caught error: " + msg); // Output: Caught error: Something specific failed
+            Err(_) => println("Could not get error message"); // Should not happen
+        }
+    }
+}
+`}
+			/>
+		</section>
+
+		<section class="mb-8">
+			<a id="error-type" class="block relative -top-16 invisible"></a>
+			<h3 class="text-xl font-bold mb-3">Error.type</h3>
+			<p class="mb-3">
+				Returns a string representation of the error's category or type.
+			</p>
+			<FunctionSignature
+				signature={`Error.type(self) -> Result<string>`}
+			/>
+			<h3 class="text-lg font-semibold mb-2">Params</h3>
+			<ul class="list-disc ml-6 mb-3">
+				<ParameterList
+					name="self"
+					type="Error"
+					desc="The error object instance."
+				/>
+			</ul>
+			<h3 class="text-lg font-semibold mb-2">Returns</h3>
+			<p class="mb-1">
+				<code class="font-mono">Ok(string)</code>: A string describing
+				the error type. Possible values include:
+			</p>
+			<ul class="list-disc ml-6 text-sm font-mono mb-3 columns-2">
+				<li>{"<syntax error>"}</li>
+				<li>{"<zero division error>"}</li>
+				<li>{"<index error>"}</li>
+				<li>{"<runtime error>"}</li>
+				<li>{"<type error>"}</li>
+				<li>{"<loop extent error>"}</li>
+				<li>{"<limit error>"}</li>
+				<li>{"<branch extent error>"}</li>
+				<li>{"<closure extent error>"}</li>
+				<li>{"<local extent error>"}</li>
+				<li>{"<argument extent error>"}</li>
+				<li>{"<name error>"}</li>
+				<li>{"<collection extent error>"}</li>
+				<li>{"<variable extent error>"}</li>
+				<li>{"<variable mismatch error>"}</li>
+				<li>{"<return extent error>"}</li>
+				<li>{"<argument mismatch error>"}</li>
+				<li>{"<stack overflow error>"}</li>
+				<li>{"<collection get error>"}</li>
+				<li>{"<collection set error>"}</li>
+				<li>{"<unpack mismatch error>"}</li>
+				<li>{"<memory error>"}</li>
+				<li>{"<value error>"}</li>
+				<li>{"<assert error>"}</li>
+				<li>{"<import extent error>"}</li>
+				<li>{"<io error>"}</li>
+				<li>{"<crux error> (default/unknown)"}</li>
+			</ul>
+			<p class="mb-3">
+				<code class="font-mono">Err(Error)</code>: Should not typically
+				occur, but memory errors during string creation are possible.
+			</p>
+			<h3 class="text-lg font-semibold mb-2">Example</h3>
+			<CodeBlock
+				id="error-type-example"
+				code={`
+use err, println from "crux:error";
+use assert from "crux:error"; // For assert example
+
+// Example 1: Runtime error from err()
+let result1 = err("Generic runtime issue");
+match result1 {
+    Ok(_) => {}
+    Err(e) => {
+        match e.type() {
+            Ok(t) => println("Error type: " + t); // Output: Error type: <runtime error>
+            Err(_) => {}
+        }
+    }
+}
+
+// Example 2: Assert error (will panic if run directly)
+fn check_assertion() {
+    assert(false, "Assertion failed");
+    give ok(nil); // Won't be reached
+}
+
+match check_assertion() {
+    Ok(_) => {}
+    Err(e) => { // This block executes because assert causes a panic caught by match
+         match e.type() {
+            Ok(t) => println("Assertion error type: " + t); // Output: Assertion error type: <assert error>
+            Err(_) => {}
+        }
+         match e.message() {
+             Ok(m) => println("Assertion message: " + m); // Output: Assertion message: Assertion failed
+             Err(_) => {}
+         }
+    }
+}
+`}
+			/>
+		</section>
+	</div>
+</Layout>

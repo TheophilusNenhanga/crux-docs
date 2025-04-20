@@ -1,0 +1,520 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import InlineCode from "../../components/InlineCode.astro";
+import NextSteps from "../../components/NextSteps.astro";
+---
+
+<Layout title="Crux Language Guide">
+	<div class="container mx-auto px-4 py-12">
+		<header class="mb-12">
+			<h1 class="text-4xl md:text-5xl font-bold mb-4">
+				Crux Language Guide
+			</h1>
+			<p class="text-lg text-gray-700 max-w-3xl">
+				Welcome to the Crux language guide! This page provides an
+				overview of the core syntax and features of Crux, using examples
+				to illustrate key concepts. Whether you're new to Crux or need a
+				refresher, this guide will help you get started.
+			</p>
+			<p class="mt-4 text-gray-600">
+				Crux is designed with the philosophy that <em class="italic"
+					>"dynamic does not have to be unsafe."</em
+				> You'll see features aimed at providing dynamic flexibility alongside
+				robust error handling.
+			</p>
+		</header>
+
+		<div class="space-y-10">
+			<section>
+				<a id="basics" class="block relative -top-20 invisible"></a>
+				<h2
+					class="text-3xl font-semibold mb-4 pb-2 border-b border-gray-300"
+				>
+					Basic Structure & Comments
+				</h2>
+				<p class="mb-4">
+					Crux scripts are executed sequentially. Comments start with <InlineCode
+						>//</InlineCode
+					>
+					and extend to the end of the line.
+				</p>
+				<CodeBlock
+					id="guide-comments"
+					code={`
+// This is a single-line comment.
+let message = "Hello"; // Comments can follow code
+println(message);
+                `}
+				/>
+			</section>
+			<section>
+				<a id="variables" class="block relative -top-20 invisible"></a>
+				<h2
+					class="text-3xl font-semibold mb-4 pb-2 border-b border-gray-300"
+				>
+					Variables
+				</h2>
+				<p class="mb-4">
+					Variables are declared using the <InlineCode>let</InlineCode
+					>
+					keyword. Crux uses dynamic typing, so you don't need to specify
+					the type.
+				</p>
+				<CodeBlock
+					id="guide-variables"
+					code={`
+let message = "Hello, Crux!"; // String
+let count = 10;              // Integer
+let pi = 3.14;               // Float
+let is_active = true;        // Boolean
+let cache = [0, 1, 8, 27];   // Array
+let config = {"port": 8080}; // Table (Dictionary/Map)
+let nothing = nil;           // Nil value
+                `}
+				/>
+			</section>
+
+			<section>
+				<a id="data-types" class="block relative -top-20 invisible"></a>
+				<h2
+					class="text-3xl font-semibold mb-4 pb-2 border-b border-gray-300"
+				>
+					Data Types & Literals
+				</h2>
+				<p class="mb-4">Crux supports common data types:</p>
+				<ul class="list-disc ml-6 mb-4 space-y-2">
+					<li>
+						<strong>Integers:</strong>(e.g. <InlineCode
+							>1</InlineCode
+						>, <InlineCode>-5</InlineCode>).
+					</li>
+					<li>
+						<strong>Floating-point numbers:</strong>
+						(e.g.<InlineCode>3.14</InlineCode>).
+					</li>
+					<li>
+						<strong>Strings:</strong> Sequences of characters enclosed
+						in single or double quotes (<InlineCode
+							>"..."</InlineCode
+						> or <InlineCode>'...'</InlineCode>). String
+						concatenation uses the <InlineCode>+</InlineCode> operator.
+					</li>
+					<li>
+						<strong>Booleans:</strong>
+						<InlineCode>true</InlineCode> and <code
+							class="font-mono">false</code
+						>.
+					</li>
+					<li>
+						<strong>Nil:</strong> Represents the absence of a value,
+						denoted by <InlineCode>nil</InlineCode>.
+					</li>
+					<li>
+						<strong>Arrays:</strong> Ordered collections of items, enclosed
+						in square brackets <InlineCode>[...]</InlineCode>. They
+						are zero-indexed.
+					</li>
+					<li>
+						<strong>Tables:</strong> Collections of key-value pairs,
+						enclosed in curly braces <InlineCode
+							>{`{ ... }`}</InlineCode
+						>. Keys can be strings, numbers, etc. Values are
+						accessed using square brackets <InlineCode
+							>table[key]</InlineCode
+						>.
+					</li>
+				</ul>
+				<CodeBlock
+					id="guide-types-example"
+					code={`
+let name = "Crux";
+let version = 0.1;
+let features = ["dynamic", "safe", "simple"];
+let settings = {"theme": "dark", "version": version};
+
+println("Language: " + name);
+println("First feature: " + features[0]); // Access array element
+println("Theme setting: " + settings["theme"]); // Access table element
+                `}
+				/>
+			</section>
+
+			<section>
+				<a id="operators" class="block relative -top-20 invisible"></a>
+				<h2
+					class="text-3xl font-semibold mb-4 pb-2 border-b border-gray-300"
+				>
+					Operators
+				</h2>
+				<p class="mb-4">
+					Crux supports standard arithmetic, comparison, and
+					assignment operators.
+				</p>
+				<ul class="list-disc ml-6 mb-4 space-y-1">
+					<li>
+						Arithmetic: <InlineCode>+</InlineCode>, <InlineCode
+							>-</InlineCode
+						>, <InlineCode>*</InlineCode>, <InlineCode>/</InlineCode
+						> (float division), <InlineCode>\</InlineCode> (integer division),
+						<InlineCode>%</InlineCode> (modulo), <InlineCode
+							>**</InlineCode
+						> (exponentiation).
+					</li>
+					<li>
+						Comparison: <InlineCode>==</InlineCode>, <InlineCode
+							>!=</InlineCode
+						>, <InlineCode>{`<`}</InlineCode>, <InlineCode
+							>{`<=`}</InlineCode
+						>, <InlineCode>{`>`}</InlineCode>, <InlineCode
+							>{`>=`}</InlineCode
+						>.
+					</li>
+					<li>
+						Assignment: <InlineCode>=</InlineCode>, <InlineCode
+							>+=</InlineCode
+						>, <InlineCode>-=</InlineCode>, etc.
+					</li>
+					<li>
+						String Concatenation: <InlineCode>+</InlineCode>.
+					</li>
+				</ul>
+				<CodeBlock
+					id="guide-operators"
+					code={`
+let x = 10;
+let y = 3;
+println(x + y);   // Output: 13
+println(x % y);   // Output: 1
+println(x \ y);   // Output: 3 (Integer division)
+println(2 ** 8);  // Output: 256
+
+let counter = 0;
+counter += 1; // counter is now 1
+                `}
+				/>
+			</section>
+
+			<section>
+				<a id="control-flow" class="block relative -top-20 invisible"
+				></a>
+				<h2
+					class="text-3xl font-semibold mb-4 pb-2 border-b border-gray-300"
+				>
+					Control Flow
+				</h2>
+				<p class="mb-4">
+					Crux provides standard control flow structures.
+				</p>
+
+				<h3 class="text-xl font-semibold mb-2 mt-6">If Statements</h3>
+				<CodeBlock
+					id="guide-if"
+					code={`
+let number = -5;
+if number > 0 {
+    println("Positive");
+} else if number == 0 {
+    println("Zero");
+} else {
+    println("Negative"); // Output: Negative
+}
+                `}
+				/>
+
+				<h3 class="text-xl font-semibold mb-2 mt-6">While Loops</h3>
+				<CodeBlock
+					id="guide-while"
+					code={`
+let n = 0;
+let arr = [];
+while n < 3 {
+    arr.push(n);
+    n += 1;
+}
+println(arr); // Output: [0, 1, 2]
+                `}
+				/>
+
+				<h3 class="text-xl font-semibold mb-2 mt-6">For Loops</h3>
+				<p class="mb-2">Crux uses a C-style for loop syntax.</p>
+				<CodeBlock
+					id="guide-for"
+					code={`
+let squares = [];
+for let i = 0; i < 5; i += 1 {
+    squares.push(i * i);
+}
+println(squares); // Output: [0, 1, 4, 9, 16]
+                `}
+				/>
+
+				<h3 class="text-xl font-semibold mb-2 mt-6">
+					Match Expressions
+				</h3>
+				<p class="mb-2">
+					The <InlineCode>match</InlineCode> expression is powerful for
+					pattern matching, especially with <code class="font-mono"
+						>Result</code
+					> types. It compares a value against several patterns.
+				</p>
+				<CodeBlock
+					id="guide-match"
+					code={`
+let value = "crux";
+match value {
+    "crux" => println("Found Crux!"); // Output: Found Crux!
+    "other" => println("Found other");
+    default => println("Unknown value"); // Fallback case
+};
+
+let result = "test".first(); // Returns Ok("t") or Err(...)
+match result {
+    Ok(char) => println("First character: " + char); // Output: First character: t
+    Err(e) => println("Error getting first char: " + e.message());
+};
+                `}
+				/>
+				<p class="mt-4">
+					You can also use <InlineCode>match</InlineCode> as an expression
+					to assign a value, using the <code class="font-mono"
+						>give</code
+					> keyword within a block to provide the result for that branch:
+				</p>
+				<CodeBlock
+					id="guide-match-expression"
+					code={`
+let text = "abc";
+let first_char = match text.first() {
+    Ok(f) => { give f; } // Give the character if Ok
+    Err(e) => { give "Error: " + e.message(); } // Give the error message if Err
+};
+println(first_char); // Output: a
+                `}
+				/>
+			</section>
+
+			<section>
+				<a id="functions" class="block relative -top-20 invisible"></a>
+				<h2
+					class="text-3xl font-semibold mb-4 pb-2 border-b border-gray-300"
+				>
+					Functions
+				</h2>
+				<p class="mb-4">
+					Functions are defined using the <code class="font-mono"
+						>fn</code
+					> keyword. They can take arguments and return values using the
+					<InlineCode>return</InlineCode> keyword (or <code
+						class="font-mono">give</code
+					> inside a match expression).
+				</p>
+				<CodeBlock
+					id="guide-functions"
+					code={`
+fn add(a, b) {
+    return a + b;
+}
+
+let sum = add(5, 3);
+println(sum); // Output: 8
+
+// Functions are first-class citizens (can be assigned to variables)
+let multiply = fn (x, y) {
+    return x * y;
+};
+
+let product = multiply(4, 5);
+println(product); // Output: 20
+
+// Example: Recursive function
+fn fib(n) {
+    if n <= 1 return 1;
+    return fib(n - 1) + fib(n - 2);
+}
+println("Fib(5): " + fib(5)); // Output: Fib(5): 8
+                `}
+				/>
+			</section>
+
+			<section>
+				<a id="error-handling" class="block relative -top-20 invisible"
+				></a>
+				<h2
+					class="text-3xl font-semibold mb-4 pb-2 border-b border-gray-300"
+				>
+					Error Handling: Result Type
+				</h2>
+				<p class="mb-4">
+					A core part of Crux's safety model is the <code
+						class="font-mono">Result</code
+					> type. Many built-in functions and methods that can potentially
+					fail return a <InlineCode>Result</InlineCode>, which is
+					either <InlineCode>Ok(value)</InlineCode> on success or <InlineCode
+						>Err(error_object)</InlineCode
+					> on failure.
+				</p>
+				<p class="mb-4">
+					The primary way to handle <code class="font-mono"
+						>Result</code
+					> types is with the <InlineCode>match</InlineCode> expression,
+					as shown previously.
+				</p>
+				<CodeBlock
+					id="guide-results"
+					code={`
+let maybe_first = "hello".first(); // Returns Ok("h")
+
+match maybe_first {
+    Ok(char) => println("Success! Got: " + char);
+    Err(e) => println("Failure! Error: " + e.message()); // Error objects have a .message() method
+}
+
+let empty_str = "";
+let maybe_error = empty_str.first(); // Returns Err(...)
+
+match maybe_error {
+    Ok(char) => println("Success! Got: " + char);
+    Err(e) => println("Failure! Error: " + e.message()); // Output: Failure! Error: 'string' must have at least one character...
+}
+                `}
+				/>
+				<p class="mt-4">
+					See the <a
+						href="/docs/error"
+						class="text-blue-600 hover:underline"
+						>Error Handling documentation</a
+					> for functions like <InlineCode>ok()</InlineCode>,
+					<InlineCode>err()</InlineCode>, <InlineCode
+						>assert()</InlineCode
+					>, and <InlineCode>panic()</InlineCode>.
+				</p>
+			</section>
+			<section>
+				<a id="classes" class="block relative -top-20 invisible"></a>
+				<h2
+					class="text-3xl font-semibold mb-4 pb-2 border-b border-gray-300"
+				>
+					Classes & Objects
+				</h2>
+				<p class="mb-4">
+					Crux supports object-oriented programming with classes.
+				</p>
+				<ul class="list-disc ml-6 mb-4 space-y-1">
+					<li>
+						Classes are defined using the <code class="font-mono"
+							>class</code
+						> keyword.
+					</li>
+					<li>
+						The constructor method is named <code class="font-mono"
+							>init</code
+						>.
+					</li>
+					<li>
+						Instance variables and methods are accessed using <code
+							class="font-mono">self</code
+						> within methods.
+					</li>
+					<li>
+						Objects are instantiated by calling the class name like
+						a function.
+					</li>
+					<li>
+						Inheritance is supported using the <code
+							class="font-mono">: ParentClass</code
+						> syntax.
+					</li>
+				</ul>
+				<CodeBlock
+					id="guide-classes"
+					code={`
+class Greeter {
+    fn init(greeting) {
+        self.greeting = greeting; // Instance variable
+    }
+
+    fn greet(name) {
+        println(self.greeting + ", " + name + "!");
+    }
+}
+
+// Inheritance
+class LoudGreeter: Greeter {
+    fn init(greeting) {
+        // Call parent init (syntax might vary slightly, assume direct call or 'super')
+        // Example: self.init(greeting.upper()); // Re-implement or call super
+        self.greeting = greeting.upper(); // Example: Uppercase the greeting
+    }
+
+    // Inherits the greet method, but uses the modified self.greeting
+}
+
+let simple_greeter = Greeter("Hello");
+simple_greeter.greet("Crux"); // Output: Hello, Crux!
+
+let loud_greeter = LoudGreeter("Hi there");
+loud_greeter.greet("Developer"); // Output: HI THERE, Developer!
+                `}
+				/>
+			</section>
+
+			<section>
+				<a id="modules" class="block relative -top-20 invisible"></a>
+				<h2
+					class="text-3xl font-semibold mb-4 pb-2 border-b border-gray-300"
+				>
+					Modules
+				</h2>
+				<p class="mb-4">
+					Crux allows code organization into separate files (modules).
+					You can import functionality from other modules using <InlineCode
+						class="font-mono">use ... from "...";</InlineCode
+					> and expose functions using the <code class="font-mono"
+						>pub</code
+					> keyword.
+				</p>
+
+				<h3 class="text-xl font-semibold mb-2 mt-6">
+					Exporting (e.g., `utils.crux`)
+				</h3>
+				<CodeBlock
+					id="guide-export"
+					code={`
+// In file: utils.crux
+pub fn helper_function() {
+    println("This is a helper!");
+}
+
+pub let VERSION = "1.0";
+                `}
+				/>
+
+				<h3 class="text-xl font-semibold mb-2 mt-6">
+					Importing (e.g., `main.crux`)
+				</h3>
+				<CodeBlock
+					id="guide-import"
+					code={`
+// In file: main.crux
+use helper_function, VERSION from "utils.crux";
+use _time_ms from "crux:time"; // Importing from built-in/standard library module
+
+helper_function(); // Output: This is a helper!
+println("Version: " + VERSION); // Output: Version: 1.0
+println("Current time (ms): " + _time_ms());
+                `}
+				/>
+				<p class="mt-4">
+					Paths starting with <InlineCode>crux:</InlineCode>
+					refer to built-in standard library modules.
+				</p>
+				<p>
+					e.g. <InlineCode>crux:time</InlineCode> for time-related functions
+					and constants.
+				</p>
+			</section>
+			<NextSteps />
+		</div>
+	</div>
+</Layout>

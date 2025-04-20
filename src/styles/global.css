@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+    --color-crux-orange: #FF9D00;
+}
+
+@layer components {
+    
+}

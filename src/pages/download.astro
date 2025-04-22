@@ -1,17 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
 
-// --- Configuration ---
-// Read from environment variables (preferred)
 const GITHUB_TOKEN = import.meta.env.GITHUB_TOKEN ?? "";
 const OWNER = import.meta.env.GITHUB_REPO_OWNER ?? "";
 const REPO = import.meta.env.GITHUB_REPO_NAME ?? "";
-
-// Or hardcode here if you skip .env (less recommended for token)
-// const OWNER = "your_github_username_or_org";
-// const REPO = "your_repository_name";
-// const GITHUB_TOKEN = undefined; // Or your token directly (unsafe)
-// ---
 
 interface Asset {
 	name: string;
@@ -84,7 +76,7 @@ try {
 	<div class="container mx-auto px-4 py-12">
 		<header class="text-center mb-12">
 			<h1 class="text-4xl md:text-5xl font-bold mb-4">Download Crux</h1>
-			<p class="text-lg text-gray-700 max-w-2xl mx-auto">
+			<p class="text-lg text-neutral-300 max-w-2xl mx-auto">
 				Download the latest stable releases of the Crux programming
 				language. Assets are hosted directly on GitHub.
 			</p>
@@ -168,7 +160,7 @@ try {
 										href={release.html_url}
 										target="_blank"
 										rel="noopener noreferrer"
-										class="text-blue-600 hover:underline"
+										class="text-blue-300 hover:underline underline-offset-2"
 									>
 										View on GitHub
 									</a>
@@ -178,7 +170,7 @@ try {
 								href={release.html_url}
 								target="_blank"
 								rel="noopener noreferrer"
-								class="inline-block bg-gray-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-gray-700 whitespace-nowrap"
+								class="inline-block bg-neutral-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-gray-600 whitespace-nowrap"
 							>
 								View Release Notes
 							</a>
@@ -201,7 +193,7 @@ try {
 													asset.browser_download_url
 												}
 												download={asset.name}
-												class="inline-block mt-1 sm:mt-0 bg-blue-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-blue-700 whitespace-nowrap"
+												class="inline-block font-semibold bg-crux-orange/50 text-white px-3 py-1 rounded text-xs hover:bg-crux-orange/85 whitespace-nowrap"
 											>
 												Download
 											</a>

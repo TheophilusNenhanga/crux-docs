@@ -1,0 +1,15 @@
+---
+interface Props {
+	href: string;
+	rest?: Record<string, any>;
+}
+const { href, ...rest } = Astro.props;
+---
+
+<a
+	href={href}
+	class="text-crux-orange hover:underline decoration-2 transition-all duration-200 underline-offset-2 font-semibold text-lg"
+	{...rest}
+>
+	<slot />
+</a>

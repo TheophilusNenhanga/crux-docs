@@ -1,0 +1,178 @@
+---
+// src/pages/blog/why-crux.astro (or similar path)
+import Layout from "../../layouts/Layout.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import InlineLink from "../../components/InlineLink.astro";
+import InlineCode from "../../components/InlineCode.astro";
+
+const title = "blog - Why Crux?";
+const author = "Theophilus Nenhanga";
+const publishDate = new Date("2025-04-30");
+
+const formattedDate = publishDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+});
+---
+
+<Layout title={title}>
+	<div class="container mx-auto px-4 py-12 max-w-3xl">
+		<article class="text-neutral-900 dark:text-neutral-300">
+			<header class="mb-8 text-center">
+				<h1 class="text-4xl md:text-5xl font-bold mb-3">{title}</h1>
+				<p class="text-md">
+					By <span class="font-medium">{author}</span> | Published on {formattedDate}
+				</p>
+			</header>
+
+			<div class="max-w-none">
+
+				<p class="mb-6 text-lg leading-relaxed">
+					Crux started off as clox from <InlineLink href="https://craftinginterpreters.com/">Crafting Interpreters by Robert Nystrom</InlineLink>, but has grown into much more. While designing the language I had to think of what would set this language apart from the rest.
+				</p>
+
+				<h2 class="text-3xl font-semibold mt-10 mb-4">The Question</h2>
+				<p class="mb-6 text-lg leading-relaxed">
+					What if we could run code indefinitely, without fear of it stopping?
+				</p>
+				<p class="mb-6 text-lg leading-relaxed">
+					That was the question that struck me and stuck with me. What if I could write code that when free of static errors, that would execute and never be halted by a runtime error. What would it take to do that?
+				</p>
+
+				<h2 class="text-3xl font-semibold mt-10 mb-4">The Decision</h2>
+				<p class="mb-6 text-lg leading-relaxed">
+					With that in mind I decided not to implement Exceptions in Crux. No try-catch, not raise, no throw. None of that. Errors still exist and are first class values just like everything else. This allows for code like this.
+				</p>
+				<CodeBlock
+					id="why-crux-example-1"
+					code={`
+fn divide(dividend, divisor) {
+  if divisor == 0 {
+    return [0, error("Cannot divide by zero")];
+  }
+  return [dividend / divisor, nil];
+}
+					`}
+				/>
+                 <p class="mt-6 mb-6 text-lg leading-relaxed">
+                    While this error handling style is possible, it is not idiomatic or ideal in Crux because crux does not allow functions to return multiple values. Using this style would mean always wrapping results in an array (or table) and manually unpacking the potential value and error:
+				</p>
+                 <CodeBlock
+					id="why-crux-example-2"
+					code={`
+let result = divide(12, 4);
+let bad_result = divide(42, 0);
+
+let value = result[0]; // 3
+let err = result[1]; // error("Cannot divide by zero")
+					`}
+				/>
+                 <p class="mt-6 mb-6 text-lg leading-relaxed">
+					While this is not the end of the world, it definitely isn't clean. We can definitely do better than this.
+				</p>
+
+                <h2 class="text-3xl font-semibold mt-10 mb-4">The Solution</h2>
+                 <p class="mb-6 text-lg leading-relaxed">
+					Matching to the rescue! Crux has support for basic pattern matching to make it easier to ensure that your code is always safe. We can update the divide function and its usage:
+				</p>
+                <CodeBlock
+					id="why-crux-example-3"
+					code={`
+fn divide(dividend, divisor) {
+  if divisor == 0 {
+    give err("Cannot divide by zero");
+  }
+  give ok(dividend / divisor);
+}
+
+let result = match divide(12, 4) {
+  Ok(v) => give v;
+  Err(e) => {
+      panic(e.message());
+    }
+}
+// result = 3
+					`}
+				/>
+                <p class="mt-6 mb-6 text-lg leading-relaxed">
+					While that is a bit more typing it makes it abundantly clear what the code is doing, and most importantly the code is safer.
+				</p>
+                 <p class="mb-6 text-lg leading-relaxed">
+                    The <InlineCode>match</InlineCode> expression is a very important part of the crux programming language. It ensures that even without runtime exceptions we can program for errors and handle them gracefully. As the language matures, so too will the match expression, allowing for safer and more robust dynamically typed code.
+				</p>
+
+                <h2 class="text-3xl font-semibold mt-10 mb-4">But what about built in functions?</h2>
+                <p class="mb-6 text-lg leading-relaxed">
+                    To ensure that not only user code is safe but crux’s internal code is safe in earlier versions of crux all built in functions returned a <InlineCode>Result</InlineCode> by default.
+                </p>
+                <p class="mb-6 text-lg leading-relaxed">
+                    A result has this type in crux (crux does not have strict types, but if it did the type would look like this)
+                </p>
+                 <CodeBlock
+                    id="why-crux-result-type"
+                    code={`Result<Ok<Any> | Error>`}
+                />
+                <p class="mt-6 mb-6 text-lg leading-relaxed">
+                    And in the underlying c implementation:
+                </p>
+                <CodeBlock
+                    id="why-crux-c-result-type"
+                    code={`
+struct ObjectResult {
+  Object object;
+  union {
+    ObjectError* err;
+    Value ok;
+  } as; 
+  bool isOk; 
+}
+                    `}
+                />
+                <p class="mt-6 mb-6 text-lg leading-relaxed">
+                    While this worked, in some ways it felt like an overcompensation. Every native function returned a result. While this made sense for functions that could fail, it was cumbersome and confusing for those that could not.
+                </p>
+                <p class="mb-6 text-lg leading-relaxed">e.g.</p>
+                 <CodeBlock
+                    id="why-crux-pi-example"
+                    code={`
+use pi from "crux:math";
+
+let number = pi();
+println(number);
+// Result<3.1415926...>
+                    `}
+                />
+                <p class="mt-6 mb-6 text-lg leading-relaxed">
+                    What? Pi returns a result? That’s weird. Yes it definitely is. So here’s the solution:
+                </p>
+
+                <h2 class="text-3xl font-semibold mt-10 mb-4">Fallible and Infallibles</h2>
+                 <p class="mb-6 text-lg leading-relaxed">
+                    The crux standard library has two types of functions, fallible and infallible functions. Fallible functions are those which may fail and return a <InlineCode>Result</InlineCode>. Infallible functions are those that cannot fail in reasonable scenarios and return a Value.
+                </p>
+                <p class="mb-6 text-lg leading-relaxed">
+                    Most functions can fail. Obvious examples like opening and reading from a file can fail, but even some not so obvious examples like searching for substrings in a string can fail. Because most functions can fail they are treated as first class citizens and their names are left as is.
+                </p>
+                 <p class="mb-6 text-lg leading-relaxed">
+                    However, for the functions that cannot fail, their names are prefixed with an underscore. So for a function like <InlineCode>len</InlineCode> that has a fallible and infallible implementation the two versions would look like this:
+                </p>
+                 <CodeBlock
+                    id="why-crux-len-example"
+                    code={`Fallible: len()`}
+                />
+                 <CodeBlock
+                    id="why-crux-_len-example"
+                    code={`Infallible: _len()`}
+                />
+                <p class="mt-6 mb-6 text-lg leading-relaxed">
+                    For fallible functions that can return a reasonable default in the case of failure an infallible function may exist. But when in doubt check the documentation.
+                </p>
+                 <p class="mb-6 text-lg leading-relaxed">
+                    That does it. With this knowledge hopefully you can understand the fundamental design decisions behind crux and decide whether or not it is the language for you. That’s crux, dynamic yet safe.
+                </p>
+
+			</div>
+		</article>
+	</div>
+</Layout>

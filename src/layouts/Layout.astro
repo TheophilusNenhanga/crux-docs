@@ -14,7 +14,7 @@ const props = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>crux lang {props.title ? `| ${props.title}` : ""}</title>
 	</head>
@@ -26,7 +26,7 @@ const props = Astro.props;
 			<Navbar />
 		</header>
 
-		<main class="pt-20 text-gray-50 container mx-auto">
+		<main class="pt-20 text-neutral-900 dark:text-neutral-300 container mx-auto">
 			<slot />
 		</main>
 

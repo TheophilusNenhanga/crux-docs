@@ -1,10 +1,12 @@
 ---
 import NameLogo from "./NameLogo.astro";
 import Link from "./Link.astro";
+import Menu from "./Menu.astro";
+import Cross from "./Cross.astro";
 ---
 
 <div
-	class="w-full py-2 fixed top-0 z-50 shadow-sm dark:shadow-lg bg-neutral-800"
+	class="hidden lg:block w-full py-2 fixed top-0 z-10 shadow-sm dark:shadow-lg bg-neutral-800"
 >
 	<nav class="container mx-auto flex justify-between items-center">
 		<div class="flex items-center gap-2">
@@ -24,3 +26,72 @@ import Link from "./Link.astro";
 		</ul>
 	</nav>
 </div>
+
+<div
+	class="lg:hidden relative flex justify-between px-8 w-full py-2 top-0 z-10 shadow-sm dark:shadow-lg bg-neutral-800"
+>
+	<div>
+		<a href="/" class="text-gray-200 hover:text-white font-bold text-xl"
+			>crux</a
+		>
+	</div>
+
+	<button id="menuOpenButton" class="stroke-white cursor-pointer">
+		<Menu />
+	</button>
+
+	<div
+		id="menuOpenContainer"
+		class="absolute w-screen h-screen transition-all duration-300 hidden bg-neutral-900 *:px-8 top-0 left-0"
+	>
+		<div class="flex justify-between bg-neutral-950 py-2">
+			<a href="/" class="text-gray-200 hover:text-white font-bold text-xl"
+				>crux</a
+			>
+			<button
+				id="menuCloseButton"
+				class="cursor-pointer text-white stroke-white"
+			>
+				<Cross />
+			</button>
+		</div>
+		<ul class="flex flex-col mt-6 gap-8">
+			<li><Link href="/download" content="Downloads" /></li>
+			<li><Link href="/docs" content="Documentation" /></li>
+			<li>
+				<Link
+					href="https://github.com/TheophilusNenhanga/crux-lang"
+					content="Source"
+				/>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<script>
+	const menuOpenButton = document.getElementById("menuOpenButton");
+	const menuOpenContainer = document.getElementById("menuOpenContainer");
+	const menuCloseButton = document.getElementById("menuCloseButton");
+
+	let isMenuOpen = false;
+	function openMobileMenu() {
+		if (isMenuOpen) return;
+		menuOpenContainer?.classList.remove("hidden");
+		document.body.style.overflow = "hidden";
+		isMenuOpen = true;
+	}
+
+	function closeMobileMenu() {
+		menuOpenContainer?.classList.add("hidden");
+		document.body.style.overflow = "auto";
+		isMenuOpen = false;
+	}
+
+	menuOpenButton?.addEventListener("click", () => {
+		openMobileMenu();
+	});
+
+	menuCloseButton?.addEventListener("click", () => {
+		closeMobileMenu();
+	});
+</script>

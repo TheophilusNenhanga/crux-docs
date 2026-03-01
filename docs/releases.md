@@ -1,9 +1,7 @@
 ---
-id: releases
-title: Releases
-sidebar_position: 99
+sidebar_position: 4
 ---
 
-# Releases
+import Releases from '@site/src/pages/Releases';
 
-Visit the [GitHub Releases](https://github.com/TheophilusNenhanga/crux-docs/releases) page to see all versions.
+<Releases />

@@ -18,13 +18,12 @@ const config: Config = {
   url: 'https://theophilusnenhanga.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: '/crux-docs/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'TheophilusNenhanga', // Usually your GitHub org/user name.
   projectName: 'crux-docs', // Usually your repo name.
-  deploymentBranch: 'gh-pages',
 
   onBrokenLinks: 'throw',
 
@@ -67,7 +66,7 @@ const config: Config = {
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          sidebarId: 'mainSidebar',
           position: 'left',
           label: 'Docs',
         },
@@ -90,8 +89,8 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Getting Started',
-              to: '/docs/intro',
+              label: 'Releases',
+              to: '/docs/releases',
             },
           ],
         },

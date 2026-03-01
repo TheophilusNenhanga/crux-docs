@@ -86,11 +86,44 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Documentation',
           items: [
+            {
+              label: 'Getting Started',
+              to: '/docs/getting-started',
+            },
+            {
+              label: 'Language Tour',
+              to: '/docs/language-tour',
+            },
+            {
+              label: 'Examples',
+              to: '/docs/examples',
+            },
             {
               label: 'Releases',
               to: '/docs/releases',
+            },
+          ],
+        },
+        {
+          title: 'Standard Library',
+          items: [
+            {
+              label: 'Core',
+              to: '/docs/core',
+            },
+            {
+              label: 'Math',
+              to: '/docs/math',
+            },
+            {
+              label: 'Vectors',
+              to: '/docs/vectors',
+            },
+            {
+              label: 'IO & FS',
+              to: '/docs/io',
             },
           ],
         },
@@ -99,7 +132,15 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/TheophilusNenhanga/crux-docs',
+              href: 'https://github.com/TheophilusNenhanga/crux-lang',
+            },
+            {
+              label: 'Report an Issue',
+              href: 'https://github.com/TheophilusNenhanga/crux-lang/issues',
+            },
+            {
+              label: 'Contribute',
+              href: 'https://github.com/TheophilusNenhanga/crux-lang/blob/main/CONTRIBUTING.md',
             },
           ],
         },

@@ -1,23 +1,23 @@
-import type {ReactNode} from 'react';
-import clsx from 'clsx';
-import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import Layout from '@theme/Layout';
-import Heading from '@theme/Heading';
+import type { ReactNode } from "react";
+import clsx from "clsx";
+import Link from "@docusaurus/Link";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import Layout from "@theme/Layout";
+import Heading from "@theme/Heading";
 
-import styles from './index.module.css';
+import styles from "./index.module.css";
 
 function CodeBlock() {
   return (
     <div className={styles.codeBlock}>
       <pre>
-        <code>{`use println from "crux:io";
+        <code>{`
 use Vec from "crux:vector";
 
 fn main() {
     let v = Vec(3, [1.0, 2.0, 3.0])?;
     let normalized = v.normalize()?;
-    
+
     println("Vector: " + string(v));
     println("Normalized: " + string(normalized));
 }
@@ -28,7 +28,15 @@ main();`}</code>
   );
 }
 
-function Feature({ title, description, link }: { title: string; description: string; link: string }) {
+function Feature({
+  title,
+  description,
+  link,
+}: {
+  title: string;
+  description: string;
+  link: string;
+}) {
   return (
     <div className={styles.feature}>
       <h3>{title}</h3>
@@ -41,24 +49,26 @@ function Feature({ title, description, link }: { title: string; description: str
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
+    <header className={clsx("hero hero--primary", styles.heroBanner)}>
       <div className="container">
         <Heading as="h1" className={styles.heroTitle}>
           {siteConfig.title}
         </Heading>
         <p className={styles.heroSubtitle}>{siteConfig.tagline}</p>
-        
+
         <CodeBlock />
-        
+
         <div className={styles.heroButtons}>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/getting-started">
+            to="/docs/getting-started"
+          >
             Get Started
           </Link>
           <Link
             className="button button--primary button--lg"
-            to="/docs/examples">
+            to="/docs/examples"
+          >
             View Examples
           </Link>
         </div>
@@ -70,19 +80,15 @@ function HomepageHeader() {
 function HomepageFeatures(): ReactNode {
   const features = [
     {
-      title: 'Fast & Efficient',
-      description: 'Built with performance in mind. Generate images, run computations, and more with speed.',
-      link: '/docs/language-tour',
+      title: "Full of Potential",
+      description:
+        "Vectors, matrices, file I/O, math, and more built-in. No external dependencies needed.",
+      link: "/docs/core",
     },
     {
-      title: 'Rich Standard Library',
-      description: 'Vectors, matrices, file I/O, math, and more built-in. No external dependencies needed.',
-      link: '/docs/core',
-    },
-    {
-      title: 'Simple Syntax',
-      description: 'Clean, readable code with familiar constructs. Functions, structs, and pattern matching.',
-      link: '/docs/language-tour',
+      title: "Simple and Elegant",
+      description: "Simplicity and elegance are at the core of Crux's design.",
+      link: "/docs/language-tour",
     },
   ];
 
@@ -99,39 +105,19 @@ function HomepageFeatures(): ReactNode {
   );
 }
 
-function HomepageStats(): ReactNode {
-  return (
-    <section className={styles.stats}>
-      <div className="container">
-        <div className={styles.statsGrid}>
-          <div className={styles.stat}>
-            <span className={styles.statNumber}>18+</span>
-            <span className={styles.statLabel}>Standard Library Modules</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.statNumber}>3</span>
-            <span className={styles.statLabel}>Platforms Supported</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.statNumber}>Open</span>
-            <span className={styles.statLabel}>Source</span>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export default function Home(): ReactNode {
   const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
       title="Crux Programming Language"
-      description="A fast, efficient programming language with a rich standard library">
+      description="A small but mighty programming language"
+    >
       <HomepageHeader />
       <main>
+        <p style={{ textAlign: "center", color: "gray", marginBottom: "2rem" }}>
+          This documentation is still a work in progress
+        </p>
         <HomepageFeatures />
-        <HomepageStats />
       </main>
     </Layout>
   );

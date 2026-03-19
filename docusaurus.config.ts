@@ -1,13 +1,13 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
-import type * as Preset from '@docusaurus/preset-classic';
+import { themes as prismThemes } from "prism-react-renderer";
+import type { Config } from "@docusaurus/types";
+import type * as Preset from "@docusaurus/preset-classic";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'Crux Programming Language',
-  tagline: 'A fast, efficient programming language',
-  favicon: 'img/favicon.ico',
+  title: "Crux Programming Language",
+  tagline: "A small but mighty language",
+  favicon: "img/favicon.ico",
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -15,37 +15,36 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://theophilusnenhanga.github.io',
+  url: "https://theophilusnenhanga.github.io",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/crux-docs/',
+  baseUrl: "/crux-docs/",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'TheophilusNenhanga', // Usually your GitHub org/user name.
-  projectName: 'crux-docs', // Usually your repo name.
+  organizationName: "TheophilusNenhanga", // Usually your GitHub org/user name.
+  projectName: "crux-docs", // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: "throw",
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: "en",
+    locales: ["en"],
   },
 
   presets: [
     [
-      'classic',
+      "classic",
       {
         docs: {
-          sidebarPath: './sidebars.ts',
-          editUrl:
-            'https://github.com/TheophilusNenhanga/crux-docs/tree/main/',
+          sidebarPath: "./sidebars.ts",
+          editUrl: "https://github.com/TheophilusNenhanga/crux-docs/tree/main/",
         },
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: "./src/css/custom.css",
         },
       } satisfies Preset.Options,
     ],
@@ -53,94 +52,94 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: "img/docusaurus-social-card.jpg",
     colorMode: {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Crux',
+      title: "Crux",
       logo: {
-        alt: 'Crux Logo',
-        src: 'img/logo.svg',
+        alt: "Crux Logo",
+        src: "img/logo.svg",
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'mainSidebar',
-          position: 'left',
-          label: 'Docs',
+          type: "docSidebar",
+          sidebarId: "mainSidebar",
+          position: "left",
+          label: "Docs",
         },
         {
-          to: '/docs/releases',
-          label: 'Releases',
-          position: 'left',
+          to: "/docs/releases",
+          label: "Releases",
+          position: "left",
         },
         {
-          href: 'https://github.com/TheophilusNenhanga/crux-docs',
-          label: 'GitHub',
-          position: 'right',
+          href: "https://github.com/TheophilusNenhanga/crux-docs",
+          label: "GitHub",
+          position: "right",
         },
       ],
     },
     footer: {
-      style: 'dark',
+      style: "dark",
       links: [
         {
-          title: 'Documentation',
+          title: "Documentation",
           items: [
             {
-              label: 'Getting Started',
-              to: '/docs/getting-started',
+              label: "Getting Started",
+              to: "/docs/getting-started",
             },
             {
-              label: 'Language Tour',
-              to: '/docs/language-tour',
+              label: "Language Tour",
+              to: "/docs/language-tour",
             },
             {
-              label: 'Examples',
-              to: '/docs/examples',
+              label: "Examples",
+              to: "/docs/examples",
             },
             {
-              label: 'Releases',
-              to: '/docs/releases',
+              label: "Releases",
+              to: "/docs/releases",
             },
           ],
         },
         {
-          title: 'Standard Library',
+          title: "Standard Library",
           items: [
             {
-              label: 'Core',
-              to: '/docs/core',
+              label: "Core",
+              to: "/docs/core",
             },
             {
-              label: 'Math',
-              to: '/docs/math',
+              label: "Math",
+              to: "/docs/math",
             },
             {
-              label: 'Vectors',
-              to: '/docs/vectors',
+              label: "Vectors",
+              to: "/docs/vectors",
             },
             {
-              label: 'IO & FS',
-              to: '/docs/io',
+              label: "IO & FS",
+              to: "/docs/io",
             },
           ],
         },
         {
-          title: 'Community',
+          title: "Community",
           items: [
             {
-              label: 'GitHub',
-              href: 'https://github.com/TheophilusNenhanga/crux-lang',
+              label: "GitHub",
+              href: "https://github.com/TheophilusNenhanga/crux-lang",
             },
             {
-              label: 'Report an Issue',
-              href: 'https://github.com/TheophilusNenhanga/crux-lang/issues',
+              label: "Report an Issue",
+              href: "https://github.com/TheophilusNenhanga/crux-lang/issues",
             },
             {
-              label: 'Contribute',
-              href: 'https://github.com/TheophilusNenhanga/crux-lang/blob/main/CONTRIBUTING.md',
+              label: "Contribute",
+              href: "https://github.com/TheophilusNenhanga/crux-lang/blob/main/CONTRIBUTING.md",
             },
           ],
         },

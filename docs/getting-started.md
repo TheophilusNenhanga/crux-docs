@@ -8,34 +8,52 @@ Welcome to the Crux programming language! This guide will help you get up and ru
 
 ## Installation
 
+### Pre Compiled Binaries
+
+You can get the latest relese from the [Github Releases Page](https://github.com/TheophilusNenhanga/crux-lang/releases).
+
+Binaries are currently available for the following Operarting Systems and Architectures
+
+- Linux (x64): crux-linux-amd64
+- Windows (x64): crux-windows-amd64.exe
+- macOS (Intel): crux-macos-amd64
+- macOS (Apple Silicon): crux-macos-arm64
+
+If you need a binary for a different operating system or architecture you can build from source and please create an [issue](https://github.com/TheophilusNenhanga/crux-lang/issues).
+
 ### Building from Source
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/crux.git
-cd crux
+#### Windows
 
-# Build the compiler
+To build from source on Windows, you need to have mingw (for gcc) installed, and in your PATH.
+You can get mingw [here](https://www.mingw-w64.org/).
+
+```shell
+cmake -G "MinGW Makefiles" -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
+
+#### Unix
+
+```shell
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
 make
-
-# Run the interpreter
-./crux your_file.crx
 ```
 
 ### Running Your First Program
 
-Create a file called `hello.crx`:
+Create a file called `hello.crux`:
 
 ```crux
-use println from "crux:io";
-
 println("Hello, World!");
 ```
 
 Run it:
 
 ```bash
-crux hello.crx
+crux hello.crux
 ```
 
 Output:
@@ -43,82 +61,7 @@ Output:
 Hello, World!
 ```
 
-## Basic Structure
-
-Every Crux program needs a `main` function that serves as the entry point:
-
-```crux
-use println from "crux:io";
-
-fn main() {
-    println("Program started!");
-    // Your code here
-}
-
-main();
-```
-
-## Quick Reference
-
-| Feature | Syntax |
-|---------|--------|
-| Import module | `use function from "crux:module";` |
-| Variable | `let name = value;` |
-| Function | `fn name(args) { body }` |
-| Print | `println(expression)` |
-
-## Example Programs
-
-### Terrain Generator
-
-This example generates a PPM image using Perlin noise:
-
-```crux
-use println from "crux:io";
-use open from "crux:fs";
-use Random from "crux:random";
-
-let IMAGE_WIDTH = 1024;
-let IMAGE_HEIGHT = 1024;
-
-fn main() {
-    let file = match open("terrain.ppm", "w") {
-        Ok(f) => give f,
-        Err => { panic "Error opening file"; }
-    };
-    
-    file.write("P3\n");
-    file.write(string(IMAGE_WIDTH) + " " + string(IMAGE_HEIGHT) + "\n");
-    file.write("255\n");
-    
-    // Generate terrain...
-}
-
-main();
-```
-
-### Ray Tracer
-
-A simple ray tracer demonstrating structs, vectors, and recursion:
-
-```crux
-use Vec from "crux:vector";
-use Random from "crux:random";
-
-struct Ray {
-    origin,
-    direction,
-    at
-}
-
-fn new_ray(origin, direction) {
-    return new Ray {
-        origin: origin,
-        direction: direction,
-        at: fn(t) { return origin.add(direction.multiply(t)); }
-    };
-}
-```
+Now that you have written the most basic program in Crux you can start exploring the language!
 
 ## Next Steps
 

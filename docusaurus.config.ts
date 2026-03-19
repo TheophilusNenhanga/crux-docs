@@ -75,6 +75,11 @@ const config: Config = {
           position: "left",
         },
         {
+          to: "/docs/roadmap",
+          label: "Roadmap",
+          position: "left",
+        },
+        {
           href: "https://github.com/TheophilusNenhanga/crux-docs",
           label: "GitHub",
           position: "right",
@@ -103,26 +108,18 @@ const config: Config = {
               label: "Releases",
               to: "/docs/releases",
             },
+            {
+              label: "Roadmap",
+              to: "/docs/roadmap",
+            },
           ],
         },
         {
           title: "Standard Library",
           items: [
             {
-              label: "Core",
+              label: "Documentation",
               to: "/docs/core",
-            },
-            {
-              label: "Math",
-              to: "/docs/math",
-            },
-            {
-              label: "Vectors",
-              to: "/docs/vectors",
-            },
-            {
-              label: "IO & FS",
-              to: "/docs/io",
             },
           ],
         },

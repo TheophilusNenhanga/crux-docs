@@ -114,9 +114,9 @@ export default function Home(): ReactNode {
     >
       <HomepageHeader />
       <main>
-        <p style={{ textAlign: "center", color: "gray", marginBottom: "2rem" }}>
+        <div className={styles.workInProgressNotice}>
           This documentation is still a work in progress
-        </p>
+        </div>
         <HomepageFeatures />
       </main>
     </Layout>
